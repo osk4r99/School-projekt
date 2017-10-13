@@ -2,27 +2,32 @@
 #This game is not yet ready
 def reroll():
     for i in range (0,5):
-        print("%s) %s\n"  % (i,dice[i]))
-    print("wich dice do you want to change")
-    ans = input("enter")
-    for i in range(0,5):
-        i = str(i)
-        if i in ans:
+        print("%s) %s\n"  % (i+1,dice[i]))
+    ans=[]
+    answ=input("enter 1-5 ")
+    print("")
+    for i in range(0, len(answ)):
+        ans.append("")
+        ans[i]=int(answ[i])-1
+    for j in range(0, len(ans)):
+        for i in range(0,5):
+            i = str(i)
+            if i in str(ans[j]):
+                i=int(i)
+                dice[i]=random.randint(1,6)
             i=int(i)
-            dice[i]=random.randint(1,6)
-        i=int(i)
 def prints():
     for i in range (0,5):
         print("%s) %s\n"  % (i,dice[i]))    
     for i in range(1,7):
         print("%s( %s   %s"%(i,stuff[i],points[i]))
-    print("Summa    %s"%(sum))
+    print("Sum    %s"%(sum))
     print("Bonus")
     for i in range(7,16):
         print("%s( %s   %s"%(i,stuff[i],points[i]))
-    print("total")
+    print("Total %s"%(tot))
 def check():
-    ans = int(input("enter 1-15"))
+    ans = int(input("enter 1-15 "))
     if ans == 1 and points[ans]==0:
         for i in range (0,5):
             if ans == dice[i]:
@@ -138,6 +143,7 @@ def check():
 #    return points[ans]
 import random
 sum=0
+tot=0
 sumt=0
 stuff={1:"Aces",2:"Twos",3:"Threes",4:"Fours",5:"Fives",6:"Sixes",7:"Pair",8:"Two pairs",9:"Three Of A Kind",10:"Four Of A Kind",11:"Small Straight",12:"Large Straight",13:"Full House",14:"Chance",15:"YATZY"}
 points={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0,}
@@ -176,3 +182,10 @@ while True:
                 sum=sum+points[i]
         sumt=1
     prints()
+
+for i in range(1, 16):
+    if "STRIKE" in str(points[i]):
+        continue
+    else:
+        tot=tot+points[i]
+prints()
