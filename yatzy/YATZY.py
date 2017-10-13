@@ -120,20 +120,30 @@ def check():
         else:
             points[ans]="STRIKE"
     elif ans == 14 and points[ans]==0:
-        points[ans]==dice[0]+dice[1]+dice[2]+dice[3]+dice[4]
+        points[ans]=dice[0]+dice[1]+dice[2]+dice[3]+dice[4]
     elif ans == 15 and points[ans]==0:
         if dice[0]==dice[1]==dice[2]==dice[3]==dice[4]:
             points[ans]=50
         else:
             points[ans]="STRIKE"
-    return points[ans]
+    else:
+        while True:
+            randomNum=random.randint(1,15)
+            if points[randomNum]==0:
+                points[randomNum]="STRIKE"
+                break
+            else:
+                continue
+        
+#    return points[ans]
 import random
 sum=0
+sumt=0
 stuff={1:"Aces",2:"Twos",3:"Threes",4:"Fours",5:"Fives",6:"Sixes",7:"Pair",8:"Two pairs",9:"Three Of A Kind",10:"Four Of A Kind",11:"Small Straight",12:"Large Straight",13:"Full House",14:"Chance",15:"YATZY"}
 points={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0,}
 while True:
     dice=[random.randint(1,6),random.randint(1,6),random.randint(1,6),random.randint(1,6),random.randint(1,6)]
-    #dice=[6,2,3,4,5]
+    #dice=[6,2,3,4,5] #use this to test
     reroll()
     reroll()
     dice.sort()
@@ -141,10 +151,28 @@ while True:
         print("%s) %s\n"  % (i,dice[i]))
     print("chose from the list which one you want\"if you want to strike something you pick something you cannot do\"")
     prints()
+    if (points[1]!=0 
+    and points[2]!=0
+    and points[3]!=0
+    and points[4]!=0
+    and points[5]!=0
+    and points[6]!=0
+    and points[7]!=0
+    and points[8]!=0
+    and points[9]!=0
+    and points[10]!=0
+    and points[11]!=0
+    and points[12]!=0
+    and points[13]!=0
+    and points[14]!=0
+    and points[15]!=0):
+        break
     check()
-    for i in range(1, len(points)+1):
-        if "STRIKE" in str(points[i]):
-            continue
-        else:
-            sum=sum+points[i]
+    if points[1]!=0 and points[2]!=0 and points[3]!=0 and points[4]!=0 and points[5]!=0 and points[6]!=0 and sumt==0:
+        for i in range(1, 7):
+            if "STRIKE" in str(points[i]):
+                continue
+            else:
+                sum=sum+points[i]
+        sumt=1
     prints()
