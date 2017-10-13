@@ -1,5 +1,5 @@
-#YATZY version 1.0
-#This game is not yet ready
+#YATZY version 1.2
+#This game is not done yet but it is playable
 def reroll():
     for i in range (0,5):
         print("%s) %s\n"  % (i+1,dice[i]))
@@ -20,11 +20,11 @@ def prints():
     for i in range (0,5):
         print("%s) %s\n"  % (i,dice[i]))    
     for i in range(1,7):
-        print("%s( %s   %s"%(i,stuff[i],points[i]))
+        print("%s) %s   %s"%(i,stuff[i],points[i]))
     print("Sum    %s"%(sum))
-    print("Bonus")
+    print("Bonus    %s"%(bonus)) #you need 63 sum on upper for you to get bonus
     for i in range(7,16):
-        print("%s( %s   %s"%(i,stuff[i],points[i]))
+        print("%s) %s   %s"%(i,stuff[i],points[i]))
     print("Total %s"%(tot))
 def check():
     ans = int(input("enter 1-15 "))
@@ -143,6 +143,7 @@ def check():
 #    return points[ans]
 import random
 sum=0
+bonus=0
 tot=0
 sumt=0
 stuff={1:"Aces",2:"Twos",3:"Threes",4:"Fours",5:"Fives",6:"Sixes",7:"Pair",8:"Two pairs",9:"Three Of A Kind",10:"Four Of A Kind",11:"Small Straight",12:"Large Straight",13:"Full House",14:"Chance",15:"YATZY"}
@@ -180,6 +181,7 @@ while True:
                 continue
             else:
                 sum=sum+points[i]
+        bonus=50
         sumt=1
     prints()
 
@@ -188,4 +190,5 @@ for i in range(1, 16):
         continue
     else:
         tot=tot+points[i]
+tot=tot+bonus
 prints()
