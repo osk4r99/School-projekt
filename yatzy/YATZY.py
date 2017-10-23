@@ -1,4 +1,4 @@
-#YATZY version 1.2
+#YATZY version 1.
 #This game is not done yet but it is playable
 def reroll():
     for i in range (0,5):
@@ -16,9 +16,10 @@ def reroll():
                 i=int(i)
                 dice[i]=random.randint(1,6)
             i=int(i)
-def prints():
-    for i in range (0,5):
-        print("%s) %s\n"  % (i,dice[i]))    
+def prints(dices):
+    if dices==True:
+        for i in range (0,5):
+            print("%s) %s\n"  % (i+1,dice[i]))    
     for i in range(1,7):
         print("%s) %s   %s"%(i,stuff[i],points[i]))
     print("Sum    %s"%(sum))
@@ -28,6 +29,7 @@ def prints():
     print("Total %s"%(tot))
 def check():
     ans = int(input("enter 1-15 "))
+    print("\n\n")
     if ans == 1 and points[ans]==0:
         for i in range (0,5):
             if ans == dice[i]:
@@ -65,14 +67,12 @@ def check():
         if points[ans]==0:
             points[ans]="STRIKE"
     elif ans == 7 and points[ans]==0:
-        j=3
         for i in range(4,0,-1):
-            if dice[i]==dice[j]:
+            if dice[i]==dice[i-1]:
                 points[ans]=dice[i]*2
                 break
             else:
                 points[ans]="STRIKE"
-            j-=1
     elif ans == 8 and points[ans]==0:
         if dice[0]==dice[1] and dice[2]==dice[3]:
             points[ans]=dice[0]+dice[1]+dice[2]+dice[3]
@@ -83,30 +83,19 @@ def check():
         else:
             points[ans]="STRIKE"
     elif ans == 9 and points[ans]==0:
-        j=3
-        I=2
         for i in range(4,1,-1):
-            if dice[i]==dice[j]==dice[I]:
+            if dice[i]==dice[i-1]==dice[i-2]:
                 points[ans]=dice[i]*3
                 break
             else:
                 points[ans]="STRIKE"
-            j-=1
-            I-=1
     elif ans == 10 and points[ans]==0:
-        J=1
-        j=3
-        I=2
         for i in range(4,2,-1):
-            if dice[i]==dice[j]==dice[I]==dice[J]:
+            if dice[i]==dice[i-1]==dice[i-2]==dice[i-3]:
                 points[ans]=dice[i]*4
                 break
             else:
                 points[ans]="STRIKE"
-
-            j-=1
-            I-=1
-            J-=1
     elif ans == 11 and points[ans]==0:
         if dice[0]==1 and dice[1]==2 and dice[2]==3 and dice[3]==4 and dice[4]==5:
             points[ans] = dice[0]+dice[1]+dice[2]+dice[3]+dice[4]
@@ -150,14 +139,12 @@ stuff={1:"Aces",2:"Twos",3:"Threes",4:"Fours",5:"Fives",6:"Sixes",7:"Pair",8:"Tw
 points={1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0,10:0,11:0,12:0,13:0,14:0,15:0,}
 while True:
     dice=[random.randint(1,6),random.randint(1,6),random.randint(1,6),random.randint(1,6),random.randint(1,6)]
-    #dice=[6,2,3,4,5] #use this to test
+    #dice=[1,1,2,3,5] #use this to test
     reroll()
     reroll()
     dice.sort()
-    for i in range (0,5):
-        print("%s) %s\n"  % (i,dice[i]))
     print("chose from the list which one you want\"if you want to strike something you pick something you cannot do\"")
-    prints()
+    prints(True)
     if (points[1]!=0 
     and points[2]!=0
     and points[3]!=0
@@ -183,7 +170,9 @@ while True:
                 sum=sum+points[i]
         bonus=50
         sumt=1
-    prints()
+    prints(False)
+    input("Enter to continue")
+
 
 for i in range(1, 16):
     if "STRIKE" in str(points[i]):
