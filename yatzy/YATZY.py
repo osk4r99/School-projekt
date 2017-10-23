@@ -208,3 +208,4 @@ for i in range(1, 16):
         tot[1]+=points[1][i]
 tot[1]+=bonus[1]
 prints(False, 0, 0)
+#TODO ADD CHOICE TO PICK 1 or 2 player
