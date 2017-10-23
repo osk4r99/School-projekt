@@ -1,4 +1,4 @@
-#YATZY version 1.
+#YATZY versio3n 1.3
 #This game is not done yet but it is playable
 def reroll():
     for i in range (0,5):
