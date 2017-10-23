@@ -10,6 +10,8 @@ def reroll():
             answ=int(answ)
             break
         except ValueError:
+            if answ=="":
+                break
             continue
     print("")
     answ=str(answ)
@@ -24,7 +26,7 @@ def reroll():
                 dice[i]=random.randint(1,6)
             i=int(i)
 def prints(dices):
-    if dices==True:
+    if dices:
         for i in range (0,5):
             print("%s) %s\n"  % (i+1,dice[i]))    
     for i in range(1,7):
@@ -34,6 +36,7 @@ def prints(dices):
     for i in range(7,16):
         print("%s) %s   %s"%(i,stuff[i],points[i]))
     print("Total %s"%(tot))
+    print("\n")
 def check():
     while True:
         ans = input("enter 1-15 ")
@@ -177,9 +180,14 @@ while True:
         for i in range(1, 7):
             if "STRIKE" in str(points[i]):
                 continue
+                
+                
+                
             else:
                 sum=sum+points[i]
-        bonus=50
+        if sum>=63:
+            
+            bonus=50
         sumt=1
     prints(False)
     input("Enter to continue")
@@ -191,4 +199,4 @@ for i in range(1, 16):
     else:
         tot=tot+points[i]
 tot=tot+bonus
-prints()
+prints(False)
