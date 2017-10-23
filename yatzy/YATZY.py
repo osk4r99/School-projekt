@@ -1,11 +1,18 @@
-#YATZY versio3n 1.3
-#This game is not done yet but it is playable
+#YATZY version 1.4
+#This is a yatzy game please enjoy
 def reroll():
     for i in range (0,5):
         print("%s) %s\n"  % (i+1,dice[i]))
     ans=[]
-    answ=input("enter 1-5 ")
+    while True:
+        answ=input("enter 1-5 ")
+        try:
+            answ=int(answ)
+            break
+        except ValueError:
+            continue
     print("")
+    answ=str(answ)
     for i in range(0, len(answ)):
         ans.append("")
         ans[i]=int(answ[i])-1
@@ -28,7 +35,13 @@ def prints(dices):
         print("%s) %s   %s"%(i,stuff[i],points[i]))
     print("Total %s"%(tot))
 def check():
-    ans = int(input("enter 1-15 "))
+    while True:
+        ans = input("enter 1-15 ")
+        try:
+            ans=int(ans)
+            break
+        except ValueError:
+            continue    
     print("\n\n")
     if ans == 1 and points[ans]==0:
         for i in range (0,5):
@@ -128,8 +141,6 @@ def check():
                 break
             else:
                 continue
-        
-#    return points[ans]
 import random
 sum=0
 bonus=0
