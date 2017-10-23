@@ -176,23 +176,24 @@ while True:
     and points[15]!=0):
         break
     check()
+    sum=0
+    for i in range(1, 7):
+        if str(points[i])=="STRIKE":
+            continue
+        else:
+            sum+=points[i]
     if points[1]!=0 and points[2]!=0 and points[3]!=0 and points[4]!=0 and points[5]!=0 and points[6]!=0 and sumt==0:
+        sum=0
         for i in range(1, 7):
             if "STRIKE" in str(points[i]):
                 continue
-                
-                
-                
             else:
                 sum=sum+points[i]
         if sum>=63:
-            
             bonus=50
         sumt=1
     prints(False)
     input("Enter to continue")
-
-
 for i in range(1, 16):
     if "STRIKE" in str(points[i]):
         continue
