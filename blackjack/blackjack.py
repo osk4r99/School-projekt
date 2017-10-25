@@ -1,4 +1,18 @@
+#Blackjack version 1.0
 from random import shuffle
+def betFunc():
+    while True:
+        bet = input("How much do you bet: ")
+        try:
+            bet = int(bet)
+        except ValueError:
+            print("Not a valid number\n")
+            continue
+        if bet >= 0:
+            return bet
+            break
+        else:
+            print("Cant bet less than 0\n")
 def answear():
     while True:
         ans = input("Y/n\n")
@@ -24,7 +38,7 @@ def cardDraw(drawncards, drawncard, OneOrTwo):
         elif "King" in hand[i] or "Queen" in hand[i] or "Jack" in hand[i]:
             cardValue[i]+=10
         else:
-            cardValue[i]+=int(hand[i][0:2]) #0:2 tar de 2 första letters from the string
+            cardValue[i]+=int(hand[i][0:2]) #0:2 takes the 2 first letters from the string
     if OneOrTwo==2:
         cardTotal=int(cardValue[0])+int(cardValue[1])
         print("You got a",hand[0],"and a",hand[1],"\nWich is a total of",cardTotal)
@@ -32,6 +46,14 @@ def cardDraw(drawncards, drawncard, OneOrTwo):
         cardTotal=int(cardValue[0])
         print("You got a",hand[0])  
     return cardTotal
+
+#Remove this when you make the full game
+money=100
+bet=0
+name=input("Enter NAME")
+
+
+
 a=0
 cardTotal=0
 while a<4:
@@ -52,21 +74,21 @@ while a<4:
     print(cardDeck)
 
     cardTotal=0
-#    print("Total money",money,"€")
+    print("Total money",money,"€")
 #    print("Total los",tLos,"€")
 #    print("Total won",tWon,"€")
-#    print("do you want to keep your bet?")
-#    print("Your current bet is",bet,"€")
-#    ans = answear()
-#    if ans =="n":
-#        bet=betFunc()
+    print("do you want to keep your bet?")
+    print("Your current bet is",bet,"€")
+    ans = answear()
+    if ans =="n":
+        bet=betFunc()
 #    if money<=0:
 #        money+=sel()
 #        if money<=0:
 #            break
-#    if bet>money:
-#        bet=money
-    #print("Hello",name,"\nwelcome to blackjack\n")
+    if bet>money:
+        bet=money
+    print("Hello",name,"\nwelcome to blackjack\n")
     input("Press enter to start\n")
     cardTotal+=cardDraw(drawncards, drawncards+2, 2)
     drawncards+=2
@@ -82,7 +104,7 @@ while a<4:
             a=3
             cardTotal=0
             print("\n\nDealer won\n")
-#            money-=bet
+            money-=bet
 #            tLos+=bet
         else:
             print("Do you want another card\n")
@@ -96,9 +118,9 @@ while a<4:
         cardTotal+=cardDraw(drawncards, drawncards+2, 2)
         drawncards+=2
         if cardTotal>=cardP1:
-            print("Dealer won\n")
+            print("\n\nDealer won\n")
             a=3
-#            money-=bet
+            money-=bet
 #            tLos+=bet    
         while a<3:
             input("\nPress enter to continiue\n")
@@ -107,19 +129,18 @@ while a<4:
             print("Wich is a total of",cardTotal,"\n")
             if cardTotal>=22:
                 a=3
-#                print("\n\n",name,"won\n")
-                print("WIN")
-#                money+=bet
+                print("\n\n%s won\n"%(name))
+                money+=bet
 #                tWon+=bet
             elif cardP1<=cardTotal:
                 print("\n\nDealer won\n")
                 a=3
-#                money-=bet
+                money-=bet
 #                tLos+=bet
     print("Do you want to play again\n")
     ans = answear()
     if ans == "n":
-#        print("Welcome back again",name)
+        print("Welcome back again",name)
         break
     else:
         a=0
