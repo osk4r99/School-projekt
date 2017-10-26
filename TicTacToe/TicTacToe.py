@@ -1,20 +1,10 @@
 def printinf():
-        print ("-------------")
-        print ("|",board[0],"|",board[1],"|",board[2],"|")
-        print ("-------------")
-        print ("|",board[3],"|",board[4],"|",board[5],"|")
-        print ("-------------")
-        print ("|",board[6],"|",board[7],"|",board[8],"|")
-        print ("-------------","\n")
+        print ("-------------\n|",board[0],"|",board[1],"|",board[2],"|\n-------------")
+        print ("|",board[3],"|",board[4],"|",board[5],"|\n-------------")
+        print ("|",board[6],"|",board[7],"|",board[8],"|\n-------------","\n")
 def test(xeo,players):
         player=[0,0]
-        count=0
-        i=0
-        j=1
-        I=2
-        si=0
-        sj=3
-        sI=6
+        i,j,I,si,sj,sI,count=0,1,2,0,3,6,0
         while 3 > count:
                 if board[i]==board[j]==board[I]==xeo:
                         print("Player {} wins".format(xeo))
