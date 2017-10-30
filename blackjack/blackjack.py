@@ -2,7 +2,7 @@
 from random import shuffle
 def betFunc():
     while True:
-        bet = input("How much do you bet: ")
+        bet = input("How much do you bet:[1:] ") or 1
         try:
             bet = int(bet)
         except ValueError:
