@@ -15,7 +15,7 @@ def betFunc():
             print("Cant bet less than 0\n")
 def answear():
     while True:
-        ans = input("Y/n\n")
+        ans = input("Y/n[Yes:]\n") or "y"
         ans = ans.lower()
         if "y" in ans:
             return ans
@@ -51,7 +51,7 @@ def cardDraw(drawncard, OneOrTwo, plyr, name):
 #Remove this when you make the full game
 money=100
 bet=0
-name=input("Enter NAME")
+name=input("Enter NAME[Bob]:") or "Bob"
 tLos=0
 tWon=0
 
@@ -142,4 +142,4 @@ while True:
     if ans == "n":
         print("Welcome back again",name)
         break
-    print("\n\n","RESTART".center(70,"*"),"\n\n")
+print("\n\n","RESTART".center(70,"*"),"\n\n")
