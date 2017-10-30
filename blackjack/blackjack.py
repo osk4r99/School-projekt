@@ -2,7 +2,7 @@
 from random import shuffle
 def betFunc():
     while True:
-        bet = input("How much do you bet:[1:] ") or 1
+        bet = input("How much do you bet[1]: ") or 1
         try:
             bet = int(bet)
         except ValueError:
@@ -15,7 +15,7 @@ def betFunc():
             print("Cant bet less than 0\n")
 def answear():
     while True:
-        ans = input("Y/n[Yes:]\n") or "y"
+        ans = input("Y/n[Yes]:\n") or "y"
         ans = ans.lower()
         if "y" in ans:
             return ans
