@@ -1,4 +1,5 @@
-#Blackjack version 1.2
+#Blackjack version 1.3
+#Now aces should automatically tunr into value of 1 instead of making your hand bust
 from random import shuffle
 def betFunc():
     while True:
@@ -35,7 +36,7 @@ def cardDraw(drawncard, OneOrTwo, plyr, name):
         drawncards+=1
 #    if len(hand)==2:
 #        hand[0]="Ace of Clubs"
-#        hand[1]="Queen of Clubs"
+#        hand[1]="Ace of Spades"
     for i in range(0, OneOrTwo):
         if "Ace" in hand[i]:
             cardValue[plyr].append(11)
@@ -43,11 +44,19 @@ def cardDraw(drawncard, OneOrTwo, plyr, name):
              cardValue[plyr].append(10)
         else:
            cardValue[plyr].append(int(hand[i][0:2])) #0:2 takes the 2 first letters from the string
+    testForAces(plyr)
     if OneOrTwo==2:
         print("%s got a %s and a %s \nWich is a total of %s"%(name, hand[0], hand[1], sum(cardValue[plyr])))
     elif OneOrTwo==1:
         print("%s got a %s"%(name, hand[0]))
-
+def testForAces(plyr):
+    if sum(cardValue[plyr])>=22:
+        for i in range(0, len(cardsdranw[plyr])):
+            if "Ace" in cardsdranw[plyr][i]:
+                if cardValue[plyr][i]==1:
+                    continue
+                else:
+                    cardValue[plyr][i]=1
 #Remove this when you make the full game
 money=100
 bet=0
@@ -63,6 +72,7 @@ while True:
         cardValue=[[], []]
         #0 is dealer 1 is player
         
+        #try to replace cards drawn with len(cardsdranw)
         drawncards=0
         cardDeck=[]
         color=["Hearts", "Diamonds", "Spades", "Clubs"]
@@ -76,9 +86,7 @@ while True:
         shuffle(cardDeck)
 #        print(cardDeck)
 
-        print("Total money %s €"%(money))
-        print("Total los %s €"%(tLos))
-        print("Total won %s €"%(tWon))
+        print("Total money %s €\nTotal los %s €\nTotal won %s €"%(money, tLos, tWon))
         bet=betFunc()
     #    if money<=0:
     #        money+=sel()
