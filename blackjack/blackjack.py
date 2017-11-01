@@ -1,5 +1,17 @@
 #Blackjack version 1.3
-#Now aces should automatically tunr into value of 1 instead of making your hand bust
+#Now aces should automatically turn into value of 1 instead of making your hand bust
+#Todo Doubling down and splitting
+#adding more than 1 player (Perhaps start with 2) 
+#Five card charlie
+#
+#NOTE TO SELF vvvvvvvvv
+#dealer får blackjack och jag 21 blir det oavgjort eller vinner dealer
+#när får man splitta och hur funkar det
+#När får man double down och vad innebär det
+#Vad innebär incuranse eller försäkring
+#och om dealern får 17 får han plocka mera kort
+#och när t.ex spelare 1 har 17 och dealer har 17 blir det tie
+#
 #TODO add so if player has 21 he cannot pickup another card
 from random import shuffle
 def betFunc():
@@ -60,7 +72,6 @@ def testForAces(plyr):
                     cardValue[plyr][i]=1
                     break
 def testPlayerCards():
-    print(len(cardsdranw[1]))
     if len(cardsdranw[1])==5:
         return 1
 #Remove this when you make the full game
@@ -133,6 +144,7 @@ while True:
                 break
         while lose==0:
             if win==1:
+                print("Player got a five card charlie")
                 break
             input("\nPress enter to continiue\n")
             cardDraw(drawncards+1, 1, 0, "Dealer")
