@@ -86,7 +86,8 @@ while True:
             cardDeck.extend((var, var2, var3, var4))
         shuffle(cardDeck)
 #        print(cardDeck)
-
+        #cardDeck[0]="Ace of Hearts"
+        #cardDeck[1]="Ace of Spades"
         print("Total money %s €\nTotal los %s €\nTotal won %s €"%(money, tLos, tWon))
         bet=betFunc()
     #    if money<=0:
