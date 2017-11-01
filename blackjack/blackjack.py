@@ -1,5 +1,6 @@
 #Blackjack version 1.3
 #Now aces should automatically tunr into value of 1 instead of making your hand bust
+#TODO add so if player has 21 he cannot pickup another card
 from random import shuffle
 def betFunc():
     while True:
@@ -57,7 +58,11 @@ def testForAces(plyr):
                     continue
                 else:
                     cardValue[plyr][i]=1
-                    #TEST ADDING A BREAK HERE IF IT FIXES THE PROBLEM
+                    break
+def testPlayerCards():
+    print(len(cardsdranw[1]))
+    if len(cardsdranw[1])==5:
+        return 1
 #Remove this when you make the full game
 money=100
 bet=0
@@ -86,8 +91,10 @@ while True:
             cardDeck.extend((var, var2, var3, var4))
         shuffle(cardDeck)
 #        print(cardDeck)
-        #cardDeck[0]="Ace of Hearts"
-        #cardDeck[1]="Ace of Spades"
+#        cardDeck[0]="Ace of Hearts"
+#        cardDeck[1]="Ace of Spades"
+#        cardDeck[3]="Ace of Clubs"
+#        cardDeck[4]="Ace of Diamonds"
         print("Total money %s €\nTotal los %s €\nTotal won %s €"%(money, tLos, tWon))
         bet=betFunc()
     #    if money<=0:
@@ -99,6 +106,7 @@ while True:
         print("Hello %s\nwelcome to blackjack\n"%(name))
         input("Press enter to start\n")
         cardDraw(drawncards+2, 2, 1, name)
+        win=testPlayerCards()
         print()
         cardDraw(drawncards+1, 1, 0, "Dealer")
         if sum(cardValue[1])==21:
@@ -107,12 +115,15 @@ while True:
             tWon+=bet*1.5
             break
         while True:
+            if win==1:
+                break
             print("Do you want another card\n")
             ans = answear()
             if ans == "n":
                 print("Dealers turn")
                 break
             cardDraw(drawncards+1, 1, 1, name)
+            win=testPlayerCards()
             print("Wich is a total of",sum(cardValue[1]))
             if sum(cardValue[1])>=22:
                 print("\n\nDealer won\n")
@@ -121,6 +132,8 @@ while True:
                 lose=1
                 break
         while lose==0:
+            if win==1:
+                break
             input("\nPress enter to continiue\n")
             cardDraw(drawncards+1, 1, 0, "Dealer")
             print("Wich is a total of",sum(cardValue[0]),"\n")
