@@ -57,6 +57,7 @@ def testForAces(plyr):
                     continue
                 else:
                     cardValue[plyr][i]=1
+                    #TEST ADDING A BREAK HERE IF IT FIXES THE PROBLEM
 #Remove this when you make the full game
 money=100
 bet=0
