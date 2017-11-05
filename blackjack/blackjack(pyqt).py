@@ -112,10 +112,10 @@ class Window(QtGui.QMainWindow):
         btnContinue=(QtGui.QPushButton("Continue", self))
         btnRestart=(QtGui.QPushButton("Restart?", self))
         btnCheck=(QtGui.QPushButton("Check?", self))
-        btn10=(QtGui.QPushButton("Bet 10", self))
-        btn50=(QtGui.QPushButton("Bet 50", self))
-        btn100=(QtGui.QPushButton("Bet 100", self))
-        btn1000=(QtGui.QPushButton("Bet 1000", self))
+        btn10=(QtGui.QPushButton("Bet 10 €", self))
+        btn50=(QtGui.QPushButton("Bet 50 €", self))
+        btn100=(QtGui.QPushButton("Bet 100 €", self))
+        btn1000=(QtGui.QPushButton("Bet 1000 €", self))
         
         btn10.clicked.connect(self.bet10)
         btn10.resize(100, 50)
@@ -152,7 +152,7 @@ class Window(QtGui.QMainWindow):
         btnStand.clicked.connect(self.stand)
         btnStand.move(0,  100)
         btnStand.resize(0, 0)
-        self.money = QtGui.QLabel(("Money %s"%(str(money))), self)
+        self.money = QtGui.QLabel(("Money %s €"%(str(money))), self)
         
         self.money.move(100, 0)
         self.money.resize(400,  100)
@@ -234,19 +234,19 @@ class Window(QtGui.QMainWindow):
             self.win.setText("Tie")
         elif sum(cardValue[1])>=22:
             money-=bet
-            self.money.setText("Money %s"%(str(money)))
+            self.money.setText("Money %s €"%(str(money)))
             self.win.setText("Dealer won")
         elif sum(cardValue[0])>=22:
             money+=bet
-            self.money.setText("Money %s"%(str(money)))
+            self.money.setText("Money %s €"%(str(money)))
             self.win.setText("You won")
         elif sum(cardValue[1])>sum(cardValue[0]):
             money+=bet
-            self.money.setText("Money %s"%(str(money)))
+            self.money.setText("Money %s €"%(str(money)))
             self.win.setText("You won")
         else:
             money-=bet
-            self.money.setText("Money %s"%(str(money)))
+            self.money.setText("Money %s €"%(str(money)))
             self.win.setText("Dealer won")
         drawn=0
         shuffle(cardDeck)
@@ -291,13 +291,16 @@ class Window(QtGui.QMainWindow):
     def close_application(self):
         global I
         if I==0:
+            card=cardDraw(drawn+1, 1, 0, "Dealer")
+            self.dealer.setText(card)
+            
             btnStand.resize(100, 50)
-            card=cardDraw(drawn+2, 2, 1, "Oskar")
+            card=cardDraw(drawn+2, 2, 1, "You")
         else:
-            card=cardDraw(drawn+1, 1, 1, "Oskar")
+            card=cardDraw(drawn+1, 1, 1, "You")
         I+=1
         self.styleChoice.setText(card)
-        self.money.setText("Money %s"%(str(money)))
+        self.money.setText("Money %s €"%(str(money)))
 def run():
     app = QtGui.QApplication(sys.argv)
     GUI = Window()
