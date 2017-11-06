@@ -1,4 +1,3 @@
-#Ta updated version from github där dealerns kort kommer till sist.
 #try adding fixe card charile o
 #och om man har 2 kort så blir en split button size 150,50 
 #Same for double down en double down button blir 100, 50 om man har en card value på mindre än 11s
@@ -62,74 +61,85 @@ class Window(QtGui.QMainWindow):
         
     def home(self):
         global btn
-        global btnStand
-        global btnContinue
-        global btnRestart
-        global btn10
-        global btn50
-        global btn100
-        global btn1000
         global money
-        btn=(QtGui.QPushButton("Hit", self))
-        btnStand= (QtGui.QPushButton("Stand", self))
-        btnContinue=(QtGui.QPushButton("Continue", self))
-        btnRestart=(QtGui.QPushButton("Restart?", self))
-        btn10=(QtGui.QPushButton("Bet 10 €", self))
-        btn50=(QtGui.QPushButton("Bet 50 €", self))
-        btn100=(QtGui.QPushButton("Bet 100 €", self))
-        btn1000=(QtGui.QPushButton("Bet 1000 €", self))
+        global pic
+        btn=[]
+        btn.append(QtGui.QPushButton("Hit", self))
+        btn.append(QtGui.QPushButton("Stand", self))
+        btn.append(QtGui.QPushButton("Continue", self))
+        btn.append(QtGui.QPushButton("Restart?", self))
+        btn.append(QtGui.QPushButton("Bet 10 €", self))
+        btn.append(QtGui.QPushButton("Bet 50 €", self))
+        btn.append(QtGui.QPushButton("Bet 100 €", self))
+        btn.append(QtGui.QPushButton("Bet 1000 €", self))
         
-        btn10.clicked.connect(lambda: self.bet(10))
-        btn10.resize(100, 50)
-        btn10.move(0,  100)
+        self.resize()
         
-        btn100.clicked.connect(lambda: self.bet(100))
-        btn100.resize(100, 50)
-        btn100.move(200,  100)
+        btn[4].clicked.connect(lambda: self.bet(10))
+        btn[4].resize(100, 50)
+        btn[4].move(0,  100)
         
-        btn50.clicked.connect(lambda: self.bet(50))
-        btn50.resize(100, 50)
-        btn50.move(100,  100)
+        btn[6].clicked.connect(lambda: self.bet(100))
+        btn[6].resize(100, 50)
+        btn[6].move(200,  100)
         
-        btn1000.clicked.connect(lambda: self.bet(1000))
-        btn1000.resize(100, 50)
-        btn1000.move(300,  100)
+        btn[5].clicked.connect(lambda: self.bet(50))
+        btn[5].resize(100, 50)
+        btn[5].move(100,  100)
         
-        btn.clicked.connect(self.close_application)
-        btn.resize(100, 50)
-        btn.move(100,  100)
+        btn[7].clicked.connect(lambda: self.bet(1000))
+        btn[7].resize(100, 50)
+        btn[7].move(300,  100)
         
-        btnRestart.clicked.connect(self.restart)
-        btnRestart.resize(0, 0)
-        btnRestart.move(100, 100)
+        btn[0].clicked.connect(self.close_application)
+        btn[0].resize(100, 50)
+        btn[0].move(100,  100)
         
-        btnContinue.clicked.connect(self.continueG)
-        btnContinue.resize(0, 0)
-        btnContinue.move(100, 100)
+        btn[3].clicked.connect(self.restart)
+        btn[3].move(100, 100)
+        
+        btn[2].clicked.connect(self.continueG)
+        btn[2].move(100, 100)
        
-        btnStand.clicked.connect(self.stand)
-        btnStand.move(0,  100)
-        btnStand.resize(0, 0)
+        btn[1].clicked.connect(self.stand)
+        btn[1].move(0,  100)
         self.money = QtGui.QLabel(("Money %s €"%(str(money))), self)
         
         self.money.move(100, 0)
         self.money.resize(400,  100)
         self.styleChoice = QtGui.QLabel("", self)
         
-        self.styleChoice.move(50, 220)
+        self.styleChoice.move(50, 400)
         self.styleChoice.resize(400,  100)
         
         self.dealer = QtGui.QLabel("", self)
         
-        self.dealer.move(50, 260)
+        self.dealer.move(50, 710)
         self.dealer.resize(400,  100)
         
         self.win = QtGui.QLabel("", self)
         
-        self.win.move(50, 300)
+        self.win.move(400, 0)
         self.win.resize(400,  100)
         
         self.show()
+    def empty(self):
+        global cardsdranw, cardValue, indentP, pic, p1, indentD
+        cardsdranw=[[], []]
+        cardValue=[[], []]
+        indentP=150
+        for i in range(0, len(pic)):
+            global pic
+            pic[i].resize(0, 0)
+        print(pic)
+        pic=[]
+        p1=0
+        indentD=150
+        print(pic)
+    def resize(self):
+        #The reason why I have buttons in lists is to make this easier
+        for i in range(0, len(btn)):
+            btn[i].resize(0, 0)
     def bet(self, n):
         global bet
         global money
@@ -138,21 +148,32 @@ class Window(QtGui.QMainWindow):
             bet=money
         if bet<0:
             bet=0
-        btn10.resize(0, 0)
-        btn100.resize(0, 0)
-        btn1000.resize(0, 0)
-        btn50.resize(0, 0)
-        btn.resize(100, 50)
-    def cardDraw(self, drawncard, OneOrTwo, plyr, name):
-        global drawn
+        self.resize()
+        btn[0].resize(100, 50)
+    def cardDraw(self, drawncard, OneOrTwo, plyr, name, indent, line):
+        global drawn, win
         global cardsdranw
         global cardValue
         global I
         global money
+        global pic
+        global p1
         hand=[]
         for i in range(drawn, drawncard):
             hand.append(cardDeck[drawn])
             cardsdranw[plyr].append(cardDeck[drawn])
+            pic.append(QtGui.QLabel(self))
+            pic[p1].setPixmap(QtGui.QPixmap("img/%s.svg"%(cardDeck[drawn])))
+            pic[p1].setGeometry(indent, line, 209, 303)
+            pic[p1].setGeometry(indent, line, 209, 303)
+            print(indent)
+            indent+=200
+            #indent is 150
+            #line is 100 
+            #line is 503 for dealer
+            pic[p1].show()
+            p1+=1
+            
             drawn+=1
         for i in range(0, OneOrTwo):
             if "Ace" in hand[i]:
@@ -164,7 +185,6 @@ class Window(QtGui.QMainWindow):
         self.testForAces(plyr)
         if OneOrTwo==2:
             if sum(cardValue[plyr])==21:
-                global win
                 card="%s got a %s and a %s \nWich is a blackjack"%(name, hand[0], hand[1])
                 win=1
                 self.check()
@@ -174,24 +194,20 @@ class Window(QtGui.QMainWindow):
         elif OneOrTwo==1:
             if sum(cardValue[plyr])==21:
                 card="%s got a %s wich is a total of %s"%(name, hand[0], sum(cardValue[plyr]))
-                btnRestart.resize(0, 0)
-                btnContinue.resize(100, 50)
-                btnStand.resize(0, 0)
-                btn.resize(0, 0)
-                
+                self.resize()
+                btn[2].resize(100, 50)
             elif sum(cardValue[plyr])>=22:
                 card="%s got a %s wich is %s and got busted"%(name, cardDeck[drawn-1], sum(cardValue[plyr]))
                 self.check()
-                btnRestart.resize(100, 50)
-                btnContinue.resize(0, 0)
-                btnStand.resize(0, 0)
-                btn.resize(0, 0)
+                self.resize()
+                btn[3].resize(100, 50)
             else:
                 card="%s got a %s wich is a total of %s"%(name, hand[0], sum(cardValue[plyr]))
             if plyr==0:
                 self.dealer.setText(card)
             else:
                 self.styleChoice.setText(card)
+        return indent
     def testForAces(self, plyr):
         if sum(cardValue[plyr])>=22:
             for i in range(0, len(cardValue[plyr])):
@@ -202,12 +218,12 @@ class Window(QtGui.QMainWindow):
                         cardValue[plyr][i]=1
                         break
     def check(self):
+        global win
         global money
         global cardValue
         global drawn
         global cardsdranw
         global I
-        global win
         if win == 1:
             money+=bet*1.5
             self.money.setText("Money %s €"%(str(money)))
@@ -237,33 +253,30 @@ class Window(QtGui.QMainWindow):
         cardValue=[[], []]
         I=-1
         win=0
-        btnRestart.resize(100, 50)
+        self.resize()
+        btn[3].resize(100, 50)
     def restart(self):
-        btn10.resize(100, 50)
-        btn100.resize(100, 50)
-        btn1000.resize(100, 50)
-        btn50.resize(100, 50)
-        btnRestart.resize(0, 0)
-        btn.resize(0, 0)
-        btnStand.resize(0, 0)
+        self.resize()
+        btn[4].resize(100, 50)
+        btn[6].resize(100, 50)
+        btn[7].resize(100, 50)
+        btn[5].resize(100, 50)
         self.win.setText("")
         self.dealer.setText("")
         self.styleChoice.setText("")
+        self.empty()
     def continueG(self):
-        global drawn
-        print(sum(cardValue[0]))
-        print(sum(cardValue[1]))
-        if sum(cardValue[0])>=17 or sum(cardValue[0])>=sum(cardValue[1]):
-            btnContinue.resize(0, 0)
-            btnRestart.resize(100, 50)
+        global drawn, indentD
+        if sum(cardValue[0])>=17:
+            self.resize()
+            btn[3].resize(100, 50)
             self.check()
         else:
-            self.cardDraw(drawn+1, 1, 0, "Dealer")
+            indentD=self.cardDraw(drawn+1, 1, 0, "Dealer",indentD , 470)
         
     def stand(self):
-        btn.resize(0, 0)
-        btnStand.resize(0, 0)
-        btnContinue.resize(100, 50)
+        self.resize()
+        btn[2].resize(100, 50)
         #This same code should run after dealer has played
 
         
@@ -273,12 +286,15 @@ class Window(QtGui.QMainWindow):
         QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Plastique"))
     def close_application(self):
         global I
+        global indentP, indentD
+        if I<=-1:
+            I=0
         if I==0:
-            btnStand.resize(100, 50)
-            self.cardDraw(drawn+2, 2, 1, "You")
-            self.cardDraw(drawn+1, 1, 0, "Dealer")
-        else:
-            self.cardDraw(drawn+1, 1, 1, "You")
+            btn[1].resize(100, 50)
+            indentP=self.cardDraw(drawn+2, 2, 1, "You",indentP , 150)
+            indentD=self.cardDraw(drawn+1, 1, 0, "Dealer",indentD , 470)
+        elif I>0:
+            indentP=self.cardDraw(drawn+1, 1, 1, "You", indentP, 150)
         I+=1
         self.money.setText("Money %s €"%(str(money)))
 def run():
@@ -302,4 +318,8 @@ shuffle(cardDeck)
 print(cardDeck)
 drawn=0
 win=0
+indentP=150
+indentD=150
+pic=[]
+p1=0
 run()
