@@ -1,67 +1,31 @@
+#Ta updated version from github där dealerns kort kommer till sist.
+#try adding fixe card charile o
+#och om man har 2 kort så blir en split button size 150,50 
+#Same for double down en double down button blir 100, 50 om man har en card value på mindre än 11s
+
+#Före du börjar do 2 player graphical version try the logic in txt base programming first
+#Och also make it convinient så att man kan use same functions med diffrent paraments for the mode to bet 2 players 
+#Hell try to make it so dynamic att same code sku gå att use på 3 player eller hell 4
+#See sentdex tutorials till slut ifall något mindblowing eller game changing tas up
+#make till image att if this is first card but it here in first spot elif it is secound card put it here in secound spot elif elif elif
+#try to make it dynamic att t.ex om firts card är ace of hearts så do den att den ser på card 1 och tar namet och
+#add jpg eller png så du bara need en for loop
+
+#eller att du att en secound deck som den testar all korten med dom du har och if true så do then same tar imagen till
+#Matching card och sen ser den till att den move image to right place self.update() maby can help with that
+#Try finding out how to add a widget after gamet har start
+#MAby self.update is the key for that
+
 import sys
 from PyQt4 import QtGui,  QtCore
 from random import shuffle
 #MAKE BUTON SIZE 0, 0 NÄR MAN INTE SKALL KUNNA CLICK IT T.EX HIT OCH STAND ON DEALERS TURN SAMT NEXT ON OWN TURN
 #START WITH GRAPHICAL TEXT BASED PROGRAM
 #LATER ON ADD ATT MAN KAN SEE ACTUAL CARD ETC ETC
-#To reset deck maby add re shuffel deck och make drawn 0 again
 #maby test making button in a list
 
+#Läs hur man print images
 
-#Make blackjack win
-#SOMTHING IS WRONG RETHINK TESTEN OM DEALERN SKALL STOP
-
-#First ask for bet typ 10 50 100 eller 1000 eller all in (MABY all in)
-#Sen hide bet button så man inte kan change it
-#Sen add hit button och stand button
-#när man press stand så försvinner hit och stand och blir replaced med continue och din total stannar kvar i hörnet och
-#en continue knapp addas för att dealern drawn new card
-
-#När man en blir busted så do denn där reset alla variables och make alla buttons size(0,0) förutom bet buttons
-def cardDraw(drawncard, OneOrTwo, plyr, name):
-    global drawn
-    global cardsdranw
-    global cardValue
-    global I
-    global money
-    hand=[]
-    for i in range(drawn, drawncard):
-        hand.append(cardDeck[drawn])
-        cardsdranw[plyr].append(cardDeck[drawn])
-        drawn+=1
-    for i in range(0, OneOrTwo):
-        if "Ace" in hand[i]:
-            cardValue[plyr].append(11)
-        elif "King" in hand[i] or "Queen" in hand[i] or "Jack" in hand[i]:
-            cardValue[plyr].append(10)
-        else:
-            cardValue[plyr].append(int(hand[i][0:2])) #0:2 takes the 2 first letters from the string
-    testForAces(plyr)
-    if OneOrTwo==2:
-        card="%s got a %s and a %s \nWich is a total of %s"%(name, hand[0], hand[1], sum(cardValue[plyr]))
-        return card
-    elif OneOrTwo==1:
-        if sum(cardValue[plyr])>=22:
-            card="%s got a %s wich is %s and got busted"%(name, cardDeck[drawn-1], sum(cardValue[plyr]))
-            btnCheck.resize(100, 50)
-            btnRestart.resize(0, 0)
-            btnContinue.resize(0, 0)
-            btnStand.resize(0, 0)
-            btn.resize(0, 0)
-            
-            return card
-        else:
-            card="%s got a %s wich is a total of %s"%(name, hand[0], sum(cardValue[plyr]))
-            return card
-def testForAces(plyr):
-    if sum(cardValue[plyr])>=22:
-        for i in range(0, len(cardValue[plyr])):
-            if "Ace" in cardsdranw[plyr][i]:
-                if cardValue[plyr][i]==1:
-                    continue
-                else:
-                    cardValue[plyr][i]=1
-                    break
 class Window(QtGui.QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
@@ -101,7 +65,6 @@ class Window(QtGui.QMainWindow):
         global btnStand
         global btnContinue
         global btnRestart
-        global btnCheck
         global btn10
         global btn50
         global btn100
@@ -111,40 +74,35 @@ class Window(QtGui.QMainWindow):
         btnStand= (QtGui.QPushButton("Stand", self))
         btnContinue=(QtGui.QPushButton("Continue", self))
         btnRestart=(QtGui.QPushButton("Restart?", self))
-        btnCheck=(QtGui.QPushButton("Check?", self))
         btn10=(QtGui.QPushButton("Bet 10 €", self))
         btn50=(QtGui.QPushButton("Bet 50 €", self))
         btn100=(QtGui.QPushButton("Bet 100 €", self))
         btn1000=(QtGui.QPushButton("Bet 1000 €", self))
         
-        btn10.clicked.connect(self.bet10)
+        btn10.clicked.connect(lambda: self.bet(10))
         btn10.resize(100, 50)
         btn10.move(0,  100)
         
-        btn100.clicked.connect(self.bet100)
+        btn100.clicked.connect(lambda: self.bet(100))
         btn100.resize(100, 50)
         btn100.move(200,  100)
         
-        btn50.clicked.connect(self.bet50)
+        btn50.clicked.connect(lambda: self.bet(50))
         btn50.resize(100, 50)
         btn50.move(100,  100)
         
-        btn1000.clicked.connect(self.bet1000)
+        btn1000.clicked.connect(lambda: self.bet(1000))
         btn1000.resize(100, 50)
         btn1000.move(300,  100)
-        
         
         btn.clicked.connect(self.close_application)
         btn.resize(100, 50)
         btn.move(100,  100)
         
-        btnCheck.clicked.connect(self.check)
-        btnCheck.resize(0, 0)
-        btnCheck.move(100, 100)
-        
         btnRestart.clicked.connect(self.restart)
         btnRestart.resize(0, 0)
         btnRestart.move(100, 100)
+        
         btnContinue.clicked.connect(self.continueG)
         btnContinue.resize(0, 0)
         btnContinue.move(100, 100)
@@ -172,10 +130,10 @@ class Window(QtGui.QMainWindow):
         self.win.resize(400,  100)
         
         self.show()
-    def bet10(self):
+    def bet(self, n):
         global bet
         global money
-        bet=10
+        bet=n
         if bet>money:
             bet=money
         if bet<0:
@@ -185,52 +143,76 @@ class Window(QtGui.QMainWindow):
         btn1000.resize(0, 0)
         btn50.resize(0, 0)
         btn.resize(100, 50)
-    def bet50(self):
-        global bet
+    def cardDraw(self, drawncard, OneOrTwo, plyr, name):
+        global drawn
+        global cardsdranw
+        global cardValue
+        global I
         global money
-        bet=50
-        if bet>money:
-            bet=money
-        if bet<0:
-            bet=0
-        btn10.resize(0, 0)
-        btn100.resize(0, 0)
-        btn1000.resize(0, 0)
-        btn50.resize(0, 0)
-        btn.resize(100, 50)
-    def bet100(self):
-        global bet
-        global money
-        bet=100
-        if bet>money:
-            bet=money
-        if bet<0:
-            bet=0
-        btn10.resize(0, 0)
-        btn100.resize(0, 0)
-        btn1000.resize(0, 0)
-        btn50.resize(0, 0)
-        btn.resize(100, 50)
-    def bet1000(self):
-        global bet
-        global money
-        bet=1000
-        if bet>money:
-            bet=money
-        if bet<0:
-            bet=0
-        btn10.resize(0, 0)
-        btn100.resize(0, 0)
-        btn1000.resize(0, 0)
-        btn50.resize(0, 0)
-        btn.resize(100, 50)
+        hand=[]
+        for i in range(drawn, drawncard):
+            hand.append(cardDeck[drawn])
+            cardsdranw[plyr].append(cardDeck[drawn])
+            drawn+=1
+        for i in range(0, OneOrTwo):
+            if "Ace" in hand[i]:
+                cardValue[plyr].append(11)
+            elif "King" in hand[i] or "Queen" in hand[i] or "Jack" in hand[i]:
+                cardValue[plyr].append(10)
+            else:
+                cardValue[plyr].append(int(hand[i][0:2])) #0:2 takes the 2 first letters from the string
+        self.testForAces(plyr)
+        if OneOrTwo==2:
+            if sum(cardValue[plyr])==21:
+                global win
+                card="%s got a %s and a %s \nWich is a blackjack"%(name, hand[0], hand[1])
+                win=1
+                self.check()
+            else:
+                card="%s got a %s and a %s \nWich is a total of %s"%(name, hand[0], hand[1], sum(cardValue[plyr]))
+            self.styleChoice.setText(card)
+        elif OneOrTwo==1:
+            if sum(cardValue[plyr])==21:
+                card="%s got a %s wich is a total of %s"%(name, hand[0], sum(cardValue[plyr]))
+                btnRestart.resize(0, 0)
+                btnContinue.resize(100, 50)
+                btnStand.resize(0, 0)
+                btn.resize(0, 0)
+                
+            elif sum(cardValue[plyr])>=22:
+                card="%s got a %s wich is %s and got busted"%(name, cardDeck[drawn-1], sum(cardValue[plyr]))
+                self.check()
+                btnRestart.resize(100, 50)
+                btnContinue.resize(0, 0)
+                btnStand.resize(0, 0)
+                btn.resize(0, 0)
+            else:
+                card="%s got a %s wich is a total of %s"%(name, hand[0], sum(cardValue[plyr]))
+            if plyr==0:
+                self.dealer.setText(card)
+            else:
+                self.styleChoice.setText(card)
+    def testForAces(self, plyr):
+        if sum(cardValue[plyr])>=22:
+            for i in range(0, len(cardValue[plyr])):
+                if "Ace" in cardsdranw[plyr][i]:
+                    if cardValue[plyr][i]==1:
+                        continue
+                    else:
+                        cardValue[plyr][i]=1
+                        break
     def check(self):
         global money
         global cardValue
         global drawn
         global cardsdranw
         global I
-        if sum(cardValue[1])==sum(cardValue[0]):
+        global win
+        if win == 1:
+            money+=bet*1.5
+            self.money.setText("Money %s €"%(str(money)))
+            self.win.setText("You won")
+        elif sum(cardValue[1])==sum(cardValue[0]):
             self.win.setText("Tie")
         elif sum(cardValue[1])>=22:
             money-=bet
@@ -253,9 +235,9 @@ class Window(QtGui.QMainWindow):
         print(cardDeck)
         cardsdranw=[[], []]
         cardValue=[[], []]
-        I=0
+        I=-1
+        win=0
         btnRestart.resize(100, 50)
-        btnCheck.resize(0, 0)
     def restart(self):
         btn10.resize(100, 50)
         btn100.resize(100, 50)
@@ -267,15 +249,16 @@ class Window(QtGui.QMainWindow):
         self.win.setText("")
         self.dealer.setText("")
         self.styleChoice.setText("")
-
     def continueG(self):
         global drawn
-        if sum(cardValue[0])>=17 or sum(cardValue[0])>sum(cardValue[1]):
+        print(sum(cardValue[0]))
+        print(sum(cardValue[1]))
+        if sum(cardValue[0])>=17 or sum(cardValue[0])>=sum(cardValue[1]):
             btnContinue.resize(0, 0)
-            btnCheck.resize(100, 50)
+            btnRestart.resize(100, 50)
+            self.check()
         else:
-            card=cardDraw(drawn+1, 1, 0, "Dealer")
-            self.dealer.setText(card)
+            self.cardDraw(drawn+1, 1, 0, "Dealer")
         
     def stand(self):
         btn.resize(0, 0)
@@ -291,15 +274,12 @@ class Window(QtGui.QMainWindow):
     def close_application(self):
         global I
         if I==0:
-            card=cardDraw(drawn+1, 1, 0, "Dealer")
-            self.dealer.setText(card)
-            
             btnStand.resize(100, 50)
-            card=cardDraw(drawn+2, 2, 1, "You")
+            self.cardDraw(drawn+2, 2, 1, "You")
+            self.cardDraw(drawn+1, 1, 0, "Dealer")
         else:
-            card=cardDraw(drawn+1, 1, 1, "You")
+            self.cardDraw(drawn+1, 1, 1, "You")
         I+=1
-        self.styleChoice.setText(card)
         self.money.setText("Money %s €"%(str(money)))
 def run():
     app = QtGui.QApplication(sys.argv)
@@ -321,4 +301,5 @@ for i in range(0,13):
 shuffle(cardDeck)
 print(cardDeck)
 drawn=0
+win=0
 run()
