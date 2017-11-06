@@ -167,7 +167,7 @@ class Window(QtGui.QMainWindow):
             pic[p1].setGeometry(indent, line, 209, 303)
             pic[p1].setGeometry(indent, line, 209, 303)
             print(indent)
-            indent+=200
+            indent+=100
             #indent is 150
             #line is 100 
             #line is 503 for dealer
