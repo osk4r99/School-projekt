@@ -13,3 +13,4 @@ A casino game in python
 ## Instructions
 - Some programs require pyqt4
 simpy run "sudo apt-get install python3-pyqt4"
+- and if you use Windows then lookup how to install pyqt4 for windows
