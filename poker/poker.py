@@ -1,5 +1,5 @@
 # coding: UTF-8
-#Version 0.8
+#Version 1.0
 import datetime, fnmatch
 from random import shuffle
 def cardPic(ans, card):
@@ -31,9 +31,9 @@ while True:
     shuffle(cardDeck)
 #    cardDeck[0]="Ace of Hearts"
 #    cardDeck[1]="Ace of Clubs"
-#    cardDeck[2]="Ace of Clubs"
-#    cardDeck[3]="King of Hearts"
-#    cardDeck[4]="King of Hearts"
+#    cardDeck[2]="Ace of Hearts"
+#    cardDeck[3]="Queen of Hearts"
+#    cardDeck[4]="10 of Hearts"
     #print(cardDeck)
     playerChoice=False
     suit = [False,False,False,False,False]           
@@ -47,16 +47,16 @@ while True:
     ans = input("Wich card/s do you want to change?\nType all numbers you want to change 1 - 5\n\n")
     card=cardPic(ans, card)
     card.sort()
-    print(card)
     currentcard=["Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
     for x in range(0, len(currentcard)):
         for i in range(0, 5):
             if currentcard[x][0:2] in card[i][0:2]:
-                if currentcard[x][0:2] not in antal2:
+#                print(x, currentcard[x][0:2], antal2)
+                if card[i][0:2] not in antal2:
                     antal[i]=(fnmatch.filter(card, '%s*'%(currentcard[x])))
                     antal2[i]=card[i][0:2]
                     cardValue[i]=x+1
-                    print(len(antal[i]), currentcard[x])
+#                    print(len(antal[i]), currentcard[x])
     for i in range(0, len(antal2)):
         if antal[i]!=0:
             antal[i]=len(antal[i])
@@ -78,9 +78,6 @@ while True:
                 cardValues[I]=cardValue[i]
                 I+=1
     par2=pair.count(2)
-    print(pair)
-    print(ranks)
-    print(cardValues)
 #    for i in range(0, 5):
 #        if pair[i]!=False:
 #            print("You got",pair[i],"of",ranks[i])
@@ -93,6 +90,15 @@ while True:
             ranks[i]="Queen"
         elif "Ki" in str(ranks[i]):
             ranks[i]="King"
+    cardValues.sort()#    cardDeck[0]="Ace of Hearts"
+#    cardDeck[1]="Ace of Clubs"
+#    cardDeck[2]="Ace of Hearts"
+#    cardDeck[3]="Queen of Hearts"
+#    cardDeck[4]="10 of Hearts"
+
+    print(pair)
+    print(ranks)
+    print(cardValues)
     if cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
         playerChoice="You got a straight royal flush in "+str(suit[0])
 #    elif 5 in pair:
