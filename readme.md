@@ -12,4 +12,4 @@ A casino game in python
 - lucky 7
 ## Instructions
 - Some programs require pyqt4
-simpy run "sudo apt-get install "python3-pyqt4"
+simpy run "sudo apt-get install python3-pyqt4"
