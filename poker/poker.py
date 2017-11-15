@@ -11,55 +11,60 @@ def cardPic(ans, card):
             drawn+=1
         I+=1
     I = 1
-    for i in range(0, 5):
-        print("%s) %s\n"%(I,card[i]))
+    for i in card:
+        print("%s) %s\n"%(I, i))
         I+=1
     return card
 timeNow=datetime.datetime.now()
 while True:
-    drawn=0
-    cardDeck=[]
-    color=["Hearts", "Diamonds", "Spades", "Clubs"]
-    card=["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
-    ans=1
+    drawn, cardDeck = 0, []
+    color = ["Hearts", "Diamonds", "Spades", "Clubs"]
+    cards = ["Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
+    ans = 1
     #Put in ans how many decks you want to play with
     for a in range(0, ans):
         for j in range(0, 4):
             for i in range(0,13):
-                var="%s of %s"%(card[i], color[j])
+                var = "%s of %s"%(cards[i], color[j])
                 cardDeck.append(var)
     shuffle(cardDeck)
 #    cardDeck[0]="Ace of Hearts"
-#    cardDeck[1]="Ace of Clubs"
-#    cardDeck[2]="Ace of Hearts"
-#    cardDeck[3]="Queen of Hearts"
+#    cardDeck[1]="King of Hearts"
+#    cardDeck[2]="Queen of Hearts"
+#    cardDeck[3]="Jack of Hearts"
 #    cardDeck[4]="10 of Hearts"
     #print(cardDeck)
     playerChoice=False
-    suit = [False,False,False,False,False]           
-    card=[False,False,False,False,False]
-    antal = [0,0,0,0,0]
-    antal2 = [0,0,0,0,0]
-    pair = [False,False,False,False,False]
-    cardValue = [0,0,0,0,0]
-    ranks,cardValues = [0,0,0,0,0],[False,False,False,False,False]
-    card=cardPic("12345", card)
+    suit, card, pair, ranks, cardValues = [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]
+    card = cardPic("12345", card)
     ans = input("Wich card/s do you want to change?\nType all numbers you want to change 1 - 5\n\n")
-    card=cardPic(ans, card)
+    card = cardPic(ans, card)
     card.sort()
-    currentcard=["Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
-    for x in range(0, len(currentcard)):
+    currentcard = ["Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
+    for x in range(0, len(cards)):
         for i in range(0, 5):
-            if currentcard[x][0:2] in card[i][0:2]:
-#                print(x, currentcard[x][0:2], antal2)
-                if card[i][0:2] not in antal2:
-                    antal[i]=(fnmatch.filter(card, '%s*'%(currentcard[x])))
-                    antal2[i]=card[i][0:2]
-                    cardValue[i]=x+1
-#                    print(len(antal[i]), currentcard[x])
-    for i in range(0, len(antal2)):
-        if antal[i]!=0:
-            antal[i]=len(antal[i])
+            if cards[x][0:2] in card[i][0:2]:
+                if card[i][0:2] not in ranks:
+                    pair[i]=(fnmatch.filter(card, '%s*'%(cards[x])))
+                    ranks[i]=card[i][0:2]
+                    cardValues[i]=x+1
+    for i in range(0, len(ranks)):
+        if pair[i]!=0:
+            pair[i]=len(pair[i])
+    for x in range(0, 5):
+        for i in range(0, len(pair)):
+            if len(pair)<=i:
+                break
+            if pair[i]==0:
+                pair.pop(i)
+                ranks.pop(i)
+                cardValues.pop(i)
+        
+    while len(pair)!=5:
+        pair.append(False)
+        ranks.append(False)
+        cardValues.append(False)
+        
     for i in range(0, 5):
         if "Spades" in card[i]:
             suit[i]="Spades"
@@ -69,15 +74,8 @@ while True:
             suit[i]="Clubs"
         elif "Diamonds" in card[i]:
             suit[i]="Diamonds"
-    I=0
-    for i in range(0, 5):
-        if antal[i] != 0:
-            if pair[I]==False:
-                pair[I]=antal[i]
-                ranks[I]=antal2[i]
-                cardValues[I]=cardValue[i]
-                I+=1
     par2=pair.count(2)
+    #Use this for printing how many pairs you have of each card
 #    for i in range(0, 5):
 #        if pair[i]!=False:
 #            print("You got",pair[i],"of",ranks[i])
@@ -90,19 +88,11 @@ while True:
             ranks[i]="Queen"
         elif "Ki" in str(ranks[i]):
             ranks[i]="King"
-    cardValues.sort()#    cardDeck[0]="Ace of Hearts"
-#    cardDeck[1]="Ace of Clubs"
-#    cardDeck[2]="Ace of Hearts"
-#    cardDeck[3]="Queen of Hearts"
-#    cardDeck[4]="10 of Hearts"
-
-    print(pair)
-    print(ranks)
-    print(cardValues)
+    cardValues.sort()
     if cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
         playerChoice="You got a straight royal flush in "+str(suit[0])
-#    elif 5 in pair:
-#        playerChoice="You got five of "+str(ranks[0]+"'s")
+    elif 5 in pair:
+        playerChoice="You got five of "+str(ranks[0]+"'s")
     elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and playerChoice==False and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
         playerChoice="You got a straight flush in "+str(suit[0])
     elif 4 in pair:
@@ -147,7 +137,7 @@ while True:
     elif "Jack" in ranks:
         playerChoice="You got a Jack high"
     else:
-        playerChoice=str("You got a ")+str(max(cardValue))+str(" high")
+        playerChoice=str("You got a ")+str(max(cardValues))+str(" high")
     print(playerChoice)
     ans=input("\n\n\nDo you want to play again y/n")
     ans=ans.lower()
