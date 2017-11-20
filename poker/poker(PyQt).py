@@ -1,14 +1,10 @@
-#try adding fixe card charile o
-#och om man har 2 kort så blir en split button size 150,50 
-#Same for double down en double down button blir 100, 50 om man har en card value på mindre än 11s
-
-#See sentdex tutorials till slut ifall något mindblowing eller game changing tas up
-
-#Updated game to PyQt5
+# Try making revert och change function the same att den first check om du har det är numbret i listan if nummber in listsa
+# så remove den numbret from lista if not nummber in lista så add den number to lista
+#Make bets like in veikkaus pika pokeri 0,20 € 0,4 0,6 0,8 and 1 €
 import sys
 import fnmatch
 from random import shuffle
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QAction, QMainWindow
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 
 class Window(QMainWindow):
@@ -28,16 +24,6 @@ class Window(QMainWindow):
         StyleChange1.setStatusTip("Change style to gtk+")
         StyleChange1.triggered.connect(lambda: self.style_set("gtk+"))
         
-        StyleChange2 = QAction("&Style Plastique", self)
-        StyleChange2.setShortcut("Ctrl+Alt+P")
-        StyleChange2.setStatusTip("Change style to Plastique")
-        StyleChange2.triggered.connect(lambda: self.style_set("Plastique"))
-    
-        StyleChange3 = QAction("&Style Cleanlooks", self)
-        StyleChange3.setShortcut("Ctrl+Alt+C")
-        StyleChange3.setStatusTip("Change style to Cleanlooks")
-        StyleChange3.triggered.connect(lambda: self.style_set("Cleanlooks"))
-
         StyleChange4 = QAction("&Style Windows", self)
         StyleChange4.setShortcut("Ctrl+Alt+W")
         StyleChange4.setStatusTip("Change style to Windows")
@@ -50,8 +36,6 @@ class Window(QMainWindow):
         editMenu = mainMenu.addMenu("&Edit")
         fileMenu.addAction(Exit)
         editMenu.addAction(StyleChange1)
-        editMenu.addAction(StyleChange2)
-        editMenu.addAction(StyleChange3)
         editMenu.addAction(StyleChange4)
 
         sshFile="style.css"
@@ -61,9 +45,11 @@ class Window(QMainWindow):
         self.home()
         
     def home(self):
-        global btn, money, pic
+        global btn, money, pic, btnC, btnR
         btn=[]
-        btn.append(QPushButton("Hit", self))
+        btnC=[]
+        btnR=[]
+        btn.append(QPushButton("Continue", self))
         btn.append(QPushButton("Stand", self))
         btn.append(QPushButton("Continue", self))
         btn.append(QPushButton("Restart?", self))
@@ -71,48 +57,48 @@ class Window(QMainWindow):
         btn.append(QPushButton("Bet 50 €", self))
         btn.append(QPushButton("Bet 100 €", self))
         btn.append(QPushButton("Bet 1000 €", self))
-        btn.append(QPushButton("Change", self))
-        btn.append(QPushButton("Change", self))
-        btn.append(QPushButton("Change", self))
-        btn.append(QPushButton("Change", self))
-        btn.append(QPushButton("Change", self))
-        btn.append(QPushButton("Revert", self))
-        btn.append(QPushButton("Revert", self))
-        btn.append(QPushButton("Revert", self))
-        btn.append(QPushButton("Revert", self))
-        btn.append(QPushButton("Revert", self))
+        btnC.append(QPushButton("Hold", self))
+        btnC.append(QPushButton("Hold", self))
+        btnC.append(QPushButton("Hold", self))
+        btnC.append(QPushButton("Hold", self))
+        btnC.append(QPushButton("Hold", self))
+        btnC.append(QPushButton("Revert", self))
+        btnC.append(QPushButton("Revert", self))
+        btnC.append(QPushButton("Revert", self))
+        btnC.append(QPushButton("Revert", self))
+        btnC.append(QPushButton("Revert", self))
         
         self.resize()
 
-        btn[8].clicked.connect(lambda: self.change("1"))
-        btn[8].move(130,  400)
+        btnC[0].clicked.connect(lambda: self.change("1"))
+        btnC[0].move(130,  400)
         
-        btn[9].clicked.connect(lambda: self.change("2"))
-        btn[9].move(330,  400)
+        btnC[1].clicked.connect(lambda: self.change("2"))
+        btnC[1].move(330,  400)
         
-        btn[10].clicked.connect(lambda: self.change("3"))
-        btn[10].move(530,  400)
+        btnC[2].clicked.connect(lambda: self.change("3"))
+        btnC[2].move(530,  400)
         
-        btn[11].clicked.connect(lambda: self.change("4"))
-        btn[11].move(730,  400)
+        btnC[3].clicked.connect(lambda: self.change("4"))
+        btnC[3].move(730,  400)
         
-        btn[12].clicked.connect(lambda: self.change("5"))
-        btn[12].move(930,  400)
+        btnC[4].clicked.connect(lambda: self.change("5"))
+        btnC[4].move(930,  400)
         
-        btn[13].clicked.connect(lambda: self.revert("1"))
-        btn[13].move(130,  450)
+        btnC[5].clicked.connect(lambda: self.revert("1"))
+        btnC[5].move(130,  450)
         
-        btn[14].clicked.connect(lambda: self.revert("2"))
-        btn[14].move(330,  450)
+        btnC[6].clicked.connect(lambda: self.revert("2"))
+        btnC[6].move(330,  450)
         
-        btn[15].clicked.connect(lambda: self.revert("3"))
-        btn[15].move(530,  450)
+        btnC[7].clicked.connect(lambda: self.revert("3"))
+        btnC[7].move(530,  450)
         
-        btn[16].clicked.connect(lambda: self.revert("4"))
-        btn[16].move(730,  450)
+        btnC[8].clicked.connect(lambda: self.revert("4"))
+        btnC[8].move(730,  450)
         
-        btn[17].clicked.connect(lambda: self.revert("5"))
-        btn[17].move(930,  450)
+        btnC[9].clicked.connect(lambda: self.revert("5"))
+        btnC[9].move(930,  450)
 
         btn[4].clicked.connect(lambda: self.bet(10))
         btn[4].resize(100, 50)
@@ -290,6 +276,8 @@ class Window(QMainWindow):
     def resize(self):
         for i in range(0, len(btn)):
             btn[i].resize(0, 0)
+        for i in range(0, len(btnC)):
+            btnC[i].resize(0, 0)
     def bet(self, n):
         global bet, money, card
         bet=n
@@ -299,11 +287,11 @@ class Window(QMainWindow):
             bet=0
         self.resize()
         btn[0].resize(100, 50)
-        btn[8].resize(100, 50)
-        btn[9].resize(100, 50)
-        btn[10].resize(100, 50)
-        btn[11].resize(100, 50)
-        btn[12].resize(100, 50)
+        btnC[0].resize(100, 50)
+        btnC[1].resize(100, 50)
+        btnC[2].resize(100, 50)
+        btnC[3].resize(100, 50)
+        btnC[4].resize(100, 50)
         card = self.cardPic("12345", card, 150)
 #        card = self.cardPic(ans, card, 150)
     def cardPic(self, ans, card, line):
@@ -343,25 +331,25 @@ class Window(QMainWindow):
         shuffle(cardDeck)
         drawn=0
     def style_set(self, n):
-        QWidget.QApplication.setStyle(QWidget.QStyleFactory.create(n))
+        QApplication.setStyle(QStyleFactory.create(n))
     def change(self, n):
         global changeCard
         changeCard.append(str(n))
         if "1" in n:
-            btn[13].resize(100, 50)
-            btn[8].resize(0, 0)
+            btnC[5].resize(100, 50)
+            btnC[0].resize(0, 0)
         elif "2" in n:
-            btn[14].resize(100, 50)
-            btn[9].resize(0, 0)
+            btnC[6].resize(100, 50)
+            btnC[1].resize(0, 0)
         elif "3" in n:
-            btn[15].resize(100, 50)
-            btn[10].resize(0, 0)
+            btnC[7].resize(100, 50)
+            btnC[2].resize(0, 0)
         elif "4" in n:
-            btn[16].resize(100, 50)
-            btn[11].resize(0, 0)
+            btnC[8].resize(100, 50)
+            btnC[3].resize(0, 0)
         elif "5" in n:
-            btn[17].resize(100, 50)
-            btn[12].resize(0, 0)
+            btnC[9].resize(100, 50)
+            btnC[4].resize(0, 0)
     def revert(self, n):
         global changeCard
         temp=False
@@ -371,20 +359,20 @@ class Window(QMainWindow):
         changeCard.pop(temp)
         
         if "1" in n:
-            btn[8].resize(100, 50)
-            btn[13].resize(0, 0)
+            btnC[0].resize(100, 50)
+            btnC[5].resize(0, 0)
         elif "2" in n:
-            btn[9].resize(100, 50)
-            btn[14].resize(0, 0)
+            btnC[1].resize(100, 50)
+            btnC[6].resize(0, 0)
         elif "3" in n:
-            btn[10].resize(100, 50)
-            btn[15].resize(0, 0)
+            btnC[2].resize(100, 50)
+            btnC[7].resize(0, 0)
         elif "4" in n:
-            btn[11].resize(100, 50)
-            btn[16].resize(0, 0)
+            btnC[3].resize(100, 50)
+            btnC[8].resize(0, 0)
         elif "5" in n:
-            btn[12].resize(100, 50)
-            btn[17].resize(0, 0)
+            btnC[4].resize(100, 50)
+            btnC[9].resize(0, 0)
 def run():
     app = QApplication(sys.argv)
     GUI = Window()
@@ -403,6 +391,11 @@ for a in range(0, ans):
             var = "%s of %s"%(cards[i], color[j])
             cardDeck.append(var)
 shuffle(cardDeck)
+#cardDeck[0]="Ace of Hearts"
+#cardDeck[1]="King of Hearts"
+#cardDeck[2]="Queen of Hearts"
+#cardDeck[3]="Jack of Hearts"
+#cardDeck[4]="10 of Hearts"
 #print(cardDeck)
 playerChoice=False
 suit, card, pair, ranks, cardValues = [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]
