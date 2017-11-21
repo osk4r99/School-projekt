@@ -131,7 +131,7 @@ class Window(QMainWindow):
         self.player = QLabel("", self)
         self.player.setStyleSheet(("background-color: transparent;"))
         
-        self.player.move(100, 500)
+        self.player.move(100, 450)
         self.player.resize(400,  50)
         
         self.dealer = QLabel("", self)
@@ -152,6 +152,9 @@ class Window(QMainWindow):
         self.show()
     def continueG(self):
         global changeCard, card
+        print(pair)
+        print(ranks)
+        print(cardValues)
         ans=""
         for i in changeCard:
             ans+=i
@@ -171,6 +174,7 @@ class Window(QMainWindow):
                         cardValues[i]=x+1
         for i in range(0, len(ranks)):
             if pair[i]!=0:
+                print(pair)
                 pair[i]=len(pair[i])
         for x in range(0, 5):
             for i in range(0, len(pair)):
@@ -347,13 +351,13 @@ def run():
     app = QApplication(sys.argv)
     GUI = Window()
     sys.exit(app.exec_())
+global suit, card, pair, ranks, cardValues, playerChoice, drawn
 changeCard=[]
 drawn, cardDeck = 0, []
 color = ["Hearts", "Diamonds", "Spades", "Clubs"]
 cards = ["Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
 money=100
 ans=1
-
 #Put in ans how many decks you want to play with
 for a in range(0, ans):
     for j in range(0, 4):
@@ -361,12 +365,6 @@ for a in range(0, ans):
             var = "%s of %s"%(cards[i], color[j])
             cardDeck.append(var)
 shuffle(cardDeck)
-#cardDeck[0]="Ace of Hearts"
-#cardDeck[1]="King of Hearts"
-#cardDeck[2]="Queen of Hearts"
-#cardDeck[3]="Jack of Hearts"
-#cardDeck[4]="10 of Hearts"
-#print(cardDeck)
 playerChoice=False
 suit, card, pair, ranks, cardValues = [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]
 p1=0
