@@ -1,6 +1,4 @@
-# Try making revert och change function the same att den first check om du har det är numbret i listan if nummber in listsa
-# så remove den numbret from lista if not nummber in lista så add den number to lista
-#Make bets like in veikkaus pika pokeri 0,20 € 0,4 0,6 0,8 and 1 €
+#Version 1.0
 import sys
 import fnmatch
 from random import shuffle
@@ -17,7 +15,7 @@ class Window(QMainWindow):
         Exit = QAction("&Exit application", self)
         Exit.setShortcut("Ctrl+Alt+E")
         Exit.setStatusTip("Leave the app")
-#        Exit.triggered.connect(self.hitMe)
+        Exit.triggered.connect(self.close_application)
         
         StyleChange1 = QAction("&Style gtk+", self)
         StyleChange1.setShortcut("Ctrl+Alt+G")
@@ -45,10 +43,9 @@ class Window(QMainWindow):
         self.home()
         
     def home(self):
-        global btn, money, pic, btnC, btnR
+        global btn, money, pic, btnC
         btn=[]
         btnC=[]
-        btnR=[]
         btn.append(QPushButton("Continue", self))
         btn.append(QPushButton("Stand", self))
         btn.append(QPushButton("Continue", self))
@@ -70,35 +67,35 @@ class Window(QMainWindow):
         
         self.resize()
 
-        btnC[0].clicked.connect(lambda: self.change("1"))
+        btnC[0].clicked.connect(lambda: self.change("1", 5, 0))
         btnC[0].move(130,  400)
         
-        btnC[1].clicked.connect(lambda: self.change("2"))
+        btnC[1].clicked.connect(lambda: self.change("2", 6, 1))
         btnC[1].move(330,  400)
         
-        btnC[2].clicked.connect(lambda: self.change("3"))
+        btnC[2].clicked.connect(lambda: self.change("3", 7, 2))
         btnC[2].move(530,  400)
         
-        btnC[3].clicked.connect(lambda: self.change("4"))
+        btnC[3].clicked.connect(lambda: self.change("4", 8, 3))
         btnC[3].move(730,  400)
         
-        btnC[4].clicked.connect(lambda: self.change("5"))
+        btnC[4].clicked.connect(lambda: self.change("5", 9, 4))
         btnC[4].move(930,  400)
         
-        btnC[5].clicked.connect(lambda: self.revert("1"))
-        btnC[5].move(130,  450)
+        btnC[5].clicked.connect(lambda: self.change("1", 0, 5))
+        btnC[5].move(130,  400)
         
-        btnC[6].clicked.connect(lambda: self.revert("2"))
-        btnC[6].move(330,  450)
+        btnC[6].clicked.connect(lambda: self.change("2", 1, 6))
+        btnC[6].move(330,  400)
         
-        btnC[7].clicked.connect(lambda: self.revert("3"))
-        btnC[7].move(530,  450)
+        btnC[7].clicked.connect(lambda: self.change("3", 2, 7))
+        btnC[7].move(530,  400)
         
-        btnC[8].clicked.connect(lambda: self.revert("4"))
-        btnC[8].move(730,  450)
+        btnC[8].clicked.connect(lambda: self.change("4", 3, 8))
+        btnC[8].move(730,  400)
         
-        btnC[9].clicked.connect(lambda: self.revert("5"))
-        btnC[9].move(930,  450)
+        btnC[9].clicked.connect(lambda: self.change("5", 4, 9))
+        btnC[9].move(930,  400)
 
         btn[4].clicked.connect(lambda: self.bet(10))
         btn[4].resize(100, 50)
@@ -332,47 +329,20 @@ class Window(QMainWindow):
         drawn=0
     def style_set(self, n):
         QApplication.setStyle(QStyleFactory.create(n))
-    def change(self, n):
+    def change(self, n, big, small):
         global changeCard
-        changeCard.append(str(n))
-        if "1" in n:
-            btnC[5].resize(100, 50)
-            btnC[0].resize(0, 0)
-        elif "2" in n:
-            btnC[6].resize(100, 50)
-            btnC[1].resize(0, 0)
-        elif "3" in n:
-            btnC[7].resize(100, 50)
-            btnC[2].resize(0, 0)
-        elif "4" in n:
-            btnC[8].resize(100, 50)
-            btnC[3].resize(0, 0)
-        elif "5" in n:
-            btnC[9].resize(100, 50)
-            btnC[4].resize(0, 0)
-    def revert(self, n):
-        global changeCard
-        temp=False
-        for i in range(0, len(changeCard)):
-            if changeCard[i] == n:
-                temp=i
-        changeCard.pop(temp)
-        
-        if "1" in n:
-            btnC[0].resize(100, 50)
-            btnC[5].resize(0, 0)
-        elif "2" in n:
-            btnC[1].resize(100, 50)
-            btnC[6].resize(0, 0)
-        elif "3" in n:
-            btnC[2].resize(100, 50)
-            btnC[7].resize(0, 0)
-        elif "4" in n:
-            btnC[3].resize(100, 50)
-            btnC[8].resize(0, 0)
-        elif "5" in n:
-            btnC[4].resize(100, 50)
-            btnC[9].resize(0, 0)
+        if str(n) in changeCard:
+            temp=False
+            for i in range(0, len(changeCard)):
+                if changeCard[i] == n:
+                    temp=i
+            changeCard.pop(temp)
+        else:
+            changeCard.append(str(n))
+        btnC[big].resize(100, 50)
+        btnC[small].resize(0, 0)
+    def close_application(self):
+        sys.exit()
 def run():
     app = QApplication(sys.argv)
     GUI = Window()
