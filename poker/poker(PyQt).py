@@ -1,4 +1,4 @@
-#Version 1.0
+#Version 1
 import sys
 import fnmatch
 from random import shuffle
@@ -152,9 +152,6 @@ class Window(QMainWindow):
         self.show()
     def continueG(self):
         global changeCard, card
-        print(pair)
-        print(ranks)
-        print(cardValues)
         ans=""
         for i in changeCard:
             ans+=i
@@ -174,7 +171,6 @@ class Window(QMainWindow):
                         cardValues[i]=x+1
         for i in range(0, len(ranks)):
             if pair[i]!=0:
-                print(pair)
                 pair[i]=len(pair[i])
         for x in range(0, 5):
             for i in range(0, len(pair)):
@@ -351,7 +347,6 @@ def run():
     app = QApplication(sys.argv)
     GUI = Window()
     sys.exit(app.exec_())
-global suit, card, pair, ranks, cardValues, playerChoice, drawn
 changeCard=[]
 drawn, cardDeck = 0, []
 color = ["Hearts", "Diamonds", "Spades", "Clubs"]
