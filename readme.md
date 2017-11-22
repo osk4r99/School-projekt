@@ -11,6 +11,6 @@ A casino game in python
 - comedy
 - lucky 7
 ## Instructions
-- Some programs require pyqt4
-simpy run "sudo apt-get install python3-pyqt4"
+- Some programs require pyqt5
+simpy run "sudo apt-get install python3-pyqt5" if images does not show just install the pyqt5 svg library
 - and if you use Windows then lookup how to install pyqt4 for windows
