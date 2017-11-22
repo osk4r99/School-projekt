@@ -1,10 +1,6 @@
-#try adding fixe card charile rule
-#Try adding so that a button that says spilt appears if you have a pair with the fist 2 cards
-#Same for doubble down
-
-#Updated game to PyQt5
+#Version 1.1
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QAction, QMainWindow
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from random import shuffle
 
@@ -125,10 +121,12 @@ class Window(QMainWindow):
         
         self.show()
     def empty(self):
-        global drawnCards, cardValue, indentP, pic, p1, indentD
+        global drawnCards, cardValue, indentP, pic, p1, indentD, win, charlie
         for i in range(0, len(pic)):
             pic[i].resize(0, 0)
         indentD, indentP, p1, pic, cardValue, drawnCards=150, 150, 0, [], [[], []], [[], []]
+        win=0
+        charlie=0
     def resize(self):
         for i in range(0, len(btn)):
             btn[i].resize(0, 0)
@@ -142,13 +140,13 @@ class Window(QMainWindow):
         self.resize()
         btn[0].resize(100, 50)
     def cardDraw(self, drawncard, OneOrTwo, plyr, name, indent, line):
-        global drawn, win, drawnCards, cardValue, I, money, pic, p1
+        global drawn, win, drawnCards, cardValue, I, money, pic, p1, charlie
         hand=[]
         for i in range(drawn, drawncard):
             hand.append(cardDeck[drawn])
             drawnCards[plyr].append(cardDeck[drawn])
             pic.append(QLabel(self))
-            pic[p1].setPixmap(QPixmap("png/%s.png"%(cardDeck[drawn])))
+            pic[p1].setPixmap(QPixmap("img/%s.svg"%(cardDeck[drawn])))
             pic[p1].setGeometry(indent, line, 169, 245)
             indent+=50
             pic[p1].show()
@@ -173,7 +171,11 @@ class Window(QMainWindow):
             self.player.setText(card)
             self.player.setStyleSheet(("background-color: white;"))
         elif OneOrTwo==1:
-            if sum(cardValue[plyr])==21:
+            if len(cardValue[plyr])>=5:
+                card="%s got a %s wich is a five card Charlie"%(name, hand[0])
+                charlie=1
+                self.check()
+            elif sum(cardValue[plyr])==21:
                 card="%s got a %s wich is a total of %s"%(name, hand[0], sum(cardValue[plyr]))
                 self.resize()
                 if plyr!=0:
@@ -203,9 +205,13 @@ class Window(QMainWindow):
                         cardValue[plyr][i]=1
                         break
     def check(self):
-        global win, money, cardValue, drawn, drawnCards, I
+        global win, money, cardValue, drawn, drawnCards, I, charlie
         if win == 1:
             money+=bet*1.5
+            self.money.setText("Money %s €"%(str(money)))
+            self.win.setText("You won")
+        elif charlie == 1:
+            money+=bet
             self.money.setText("Money %s €"%(str(money)))
             self.win.setText("You won")
         elif sum(cardValue[1])==sum(cardValue[0]):
@@ -273,7 +279,7 @@ cardValue=[[], []]
 cardDeck=[]
 color=["Hearts", "Diamonds", "Spades", "Clubs"]
 card=["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
-ans=1
+ans=6
 #Put in ans how many decks you want to play with
 for a in range(0, ans):
     for j in range(0, 4):
@@ -282,5 +288,8 @@ for a in range(0, ans):
             cardDeck.append(var)
 shuffle(cardDeck)
 print(cardDeck)
+for i in range(0, 10):
+    cardDeck[i]="Ace of Spades"
 indentP, indentD, pic, p1, win, drawn=150, 150, [], 0, 0, 0
+charlie=0
 run()
