@@ -1,8 +1,8 @@
-#Version 1.1
+#Version 1.2
 import sys
 import fnmatch
 from random import shuffle
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 
 class Window(QMainWindow):
@@ -43,17 +43,18 @@ class Window(QMainWindow):
         self.home()
 
     def home(self):
-        global btn, money, pic, btnC
+        global bet, btn, money, pic, btnC, btnB
         btn=[]
         btnC=[]
+        btnB=[]
+        btn.append(QPushButton("Deal", self))
+        btn.append(QPushButton("Deal", self))
         btn.append(QPushButton("Continue", self))
-        btn.append(QPushButton("Stand", self))
-        btn.append(QPushButton("Continue", self))
-        btn.append(QPushButton("Restart?", self))
-        btn.append(QPushButton("Bet 10 €", self))
-        btn.append(QPushButton("Bet 50 €", self))
-        btn.append(QPushButton("Bet 100 €", self))
-        btn.append(QPushButton("Bet 1000 €", self))
+        btn.append(QPushButton("Deal", self))
+        btnB.append(QPushButton("Bet 0,20 €", self))
+        btnB.append(QPushButton("Bet 0,40 €", self))
+        btnB.append(QPushButton("Bet 0,80 €", self))
+        btnB.append(QPushButton("Bet  1 €", self))
         btnC.append(QPushButton("Hold", self))
         btnC.append(QPushButton("Hold", self))
         btnC.append(QPushButton("Hold", self))
@@ -77,31 +78,39 @@ class Window(QMainWindow):
         btnC[4].clicked.connect(lambda: self.change("5"))
         btnC[4].move(930,  400)
 
-        btn[4].clicked.connect(lambda: self.bet(10))
-        btn[4].resize(100, 50)
-        btn[4].move(0,  100)
+        btnB[0].clicked.connect(lambda: self.bet(0.2, 0))
+        btnB[0].resize(100, 50)
+        btnB[0].move(200,  100)
+        btnB[0].setStyleSheet("background-color:black;")
+        bet=0.2
+        btnB[0].setShortcut("1")
 
-        btn[6].clicked.connect(lambda: self.bet(100))
-        btn[6].resize(100, 50)
-        btn[6].move(200,  100)
+        btnB[2].clicked.connect(lambda: self.bet(0.8, 2))
+        btnB[2].resize(100, 50)
+        btnB[2].move(400,  100)
+        btnB[2].setShortcut("3")
 
-        btn[5].clicked.connect(lambda: self.bet(50))
-        btn[5].resize(100, 50)
-        btn[5].move(100,  100)
-
-        btn[7].clicked.connect(lambda: self.bet(1000))
-        btn[7].resize(100, 50)
-        btn[7].move(300,  100)
-
+        btnB[1].clicked.connect(lambda: self.bet(0.4, 1))
+        btnB[1].resize(100, 50)
+        btnB[1].move(300,  100)
+        btnB[1].setShortcut("2")
+    
+        btnB[3].clicked.connect(lambda: self.bet(1, 3))
+        btnB[3].resize(100, 50)
+        btnB[3].move(500,  100)
+        btnB[3].setShortcut("4")
+        
         btn[0].clicked.connect(self.continueG)
         btn[0].resize(100, 50)
         btn[0].move(100,  100)
-
+    
         btn[3].clicked.connect(self.restart)
         btn[3].move(100, 100)
 
-#        btn[1].clicked.connect(self.stand)
-        btn[1].move(0,  100)
+        btn[1].clicked.connect(self.deal)
+        btn[1].move(100,  100)
+        btn[1].resize(100, 50)
+        btn[1].setShortcut("H")
         self.money = QLabel(("Money %s €"%(str(money))), self)
         self.money.setStyleSheet(("background-color: white;"))
 
@@ -115,7 +124,7 @@ class Window(QMainWindow):
 
         self.dealer = QLabel("", self)
 
-        self.dealer.move(100, 720)
+        self.dealer.move(100, 500)
         self.dealer.resize(400,  50)
         self.dealer.setStyleSheet(("background-color: transparent;"))
 
@@ -130,7 +139,9 @@ class Window(QMainWindow):
 
         self.show()
     def continueG(self):
+        btn[0].setShortcut("")
         global changeCard, card, bet, money
+        win=""
         ans=""
         for i in changeCard:
             ans+=i
@@ -190,45 +201,52 @@ class Window(QMainWindow):
         cardValues.sort()
         if cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight royal flush in "+str(suit[0])
-            money+=bet*50
+            money+=round(bet*5*50, 2)
+            win="And won %s €"%(round(bet*5*50, 2))
         elif 5 in pair:
             playerChoice="You got five of "+str(ranks[0]+"'s")
-            money+=bet*50
+            money+=round(bet*5*50, 2)
+            win="And won %s €"%(round(bet*5*50, 2))
         elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight flush in "+str(suit[0])
-            money+=bet*37
+            money+=round(bet*5*37, 2)
+            win="And won %s €"%(round(bet*5*37, 2))
         elif 4 in pair:
             for i in range(0, 2):
                 if pair[i]==4:
                     playerChoice="You got four of a kind with "+str(ranks[i]+"'s")
-                    money+=bet*25
+                    money+=round(bet*5*25, 2)
+                    win="And won %s €"%(round(bet*5*25, 2))
         elif 3 in pair and 2 in pair:
             I=1
             for i in range(0, 2):
                 if pair[i]==3 and pair[I]==2:
                     playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
-                    money+=bet*10
+                    money+=round(bet*5*10, 2)
+                    win="And won %s €"%(round(bet*5*10, 2))
                 I-=1
         elif suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a flush in "+str(suit[0])
-            money+=bet*7
-        elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4:
+            money+=round(bet*5*7, 2)
+            win="And won %s €"%(round(bet*5*7, 2))
+        elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 or (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1):
             playerChoice="You got a straight"
-            money+=bet*4
-        elif cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1:
-            playerChoice="You got a straight"
-            money+=bet*5
+            money+=round(bet*5*5, 2)
+            win="And won %s €"%(round(bet*5*5, 2))
         elif 3 in pair:
             for i in range(0, 3):
                 if pair[i]==3:
                     playerChoice="You got a tripple of "+str(ranks[i]+"'s")
-                    money+=bet*2
+                    money+=round(bet*5*2, 2)
+                    win="And won %s €"%(round(bet*5*2, 2))
+                    
         elif pair.count(2)==2:
             II,I=0,1
             for i in range(0, 3):
                 if pair[II]==2 and pair[I]==2:
                     playerChoice="You got two pairs one of "+str(ranks[II]+"'s")+str(" and one of ")+str(ranks[I]+"'s")
-                    money+=bet
+                    money+=round(bet*5, 2)
+                    win="And won %s €"%(round(bet*5, 2))
                 if I==1:
                     I+=1
                 elif I==2:
@@ -238,26 +256,45 @@ class Window(QMainWindow):
                 if pair[i]==2:
                     playerChoice="You got a pair of "+str(ranks[i]+"'s")
                     money-=bet
+                    win="And lost %s €"%(round(bet, 2))
         elif "Ace" in ranks:
             playerChoice="You got an Ace high"
             money-=bet
+            win="And lost %s €"%(round(bet, 2))
         elif "King" in ranks:
             playerChoice="You got a King high"
             money-=bet
+            win="And lost %s €"%(round(bet, 2))
+            
         elif "Queen" in ranks:
             playerChoice="You got a Queen high"
             money-=bet
+            win="And lost %s €"%(round(bet, 2))
         elif "Jack" in ranks:
             playerChoice="You got a Jack high"
             money-=bet
+            win="And lost %s €"%(round(bet, 2))
         else:
             playerChoice=str("You got a ")+str(max(cardValues))+str(" high")
             money-=bet
+            win="And lost %s €"%(round(bet, 2))
         self.player.setText(playerChoice)
         self.player.setStyleSheet(("background-color: white;"))
+        self.dealer.setText(win)
+        self.dealer.setStyleSheet(("background-color: white;"))
         print(playerChoice)
+        money=round(money, 2)
         self.money.setText("Money %s €"%(str(money)))
         btn[3].resize(100, 50)
+        btn[3].setShortcut("H")
+        btnB[0].resize(100, 50)
+        btnB[1].resize(100, 50)
+        btnB[0].setShortcut("1")
+        btnB[1].setShortcut("2")
+        btnB[2].setShortcut("3")
+        btnB[3].setShortcut("4")
+        btnB[2].resize(100, 50)
+        btnB[3].resize(100, 50)
         #Add here make restart button resize
 
 
@@ -271,22 +308,39 @@ class Window(QMainWindow):
             btn[i].resize(0, 0)
         for i in range(0, len(btnC)):
             btnC[i].resize(0, 0)
-    def bet(self, n):
+            btnC[i].setShortcut("")
+        for i in range(0, len(btnB)):
+            btnB[i].resize(0, 0)
+            btnB[i].setShortcut("")
+    def bet(self, n, index):
         global bet, money, card
         bet=n
+        for i in range(0, 4):
+            btnB[i].setStyleSheet("background-color:none;")
+        btnB[index].setStyleSheet("background-color:black;")
         if bet>money:
             bet=money
         if bet<0:
             bet=0
+#        card = self.cardPic(ans, card, 150)
+    def deal(self):
+        global card
+        btn[1].setShortcut("")
         self.resize()
         btn[0].resize(100, 50)
+        btn[0].setShortcut("H")
         btnC[0].resize(100, 50)
+        btnC[0].setShortcut("1")
         btnC[1].resize(100, 50)
+        btnC[1].setShortcut("2")
         btnC[2].resize(100, 50)
+        btnC[2].setShortcut("3")
         btnC[3].resize(100, 50)
+        btnC[3].setShortcut("4")
         btnC[4].resize(100, 50)
+        btnC[4].setShortcut("5")
         card = self.cardPic("12345", card, 150)
-#        card = self.cardPic(ans, card, 150)
+
     def cardPic(self, ans, card, line):
         global drawn, indent, p1
         I = 1
@@ -306,12 +360,9 @@ class Window(QMainWindow):
             I+=1
         return card
     def restart(self):
+        btn[3].setShortcut("")
         global suit, card, pair, ranks, cardValues, playerChoice, drawn, changeCard
         self.resize()
-        btn[4].resize(100, 50)
-        btn[6].resize(100, 50)
-        btn[7].resize(100, 50)
-        btn[5].resize(100, 50)
         self.win.setText("")
         self.dealer.setText("")
         self.player.setText("")
@@ -329,6 +380,7 @@ class Window(QMainWindow):
         btnC[3].setStyleSheet(("background-color: none;"))
         btnC[4].setStyleSheet(("background-color: none;"))
         drawn=0
+        self.deal()
     def style_set(self, n):
         QApplication.setStyle(QStyleFactory.create(n))
     def change(self, n):
@@ -356,7 +408,7 @@ changeCard=["1", "2", "3", "4", "5"]
 drawn, cardDeck = 0, []
 color = ["Hearts", "Diamonds", "Spades", "Clubs"]
 cards = ["Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
-money=10000
+money=100
 ans=1
 #Put in ans how many decks you want to play with
 for a in range(0, ans):
@@ -365,11 +417,6 @@ for a in range(0, ans):
             var = "%s of %s"%(cards[i], color[j])
             cardDeck.append(var)
 shuffle(cardDeck)
-#cardDeck[0]="Ace of Spades"
-#cardDeck[1]="5 of Clubs"
-#cardDeck[2]="4 of Clubs"
-#cardDeck[3]="3 of Clubs"
-#cardDeck[4]="2 of Clubs"
 playerChoice=False
 suit, card, pair, ranks, cardValues = [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]
 p1=0
