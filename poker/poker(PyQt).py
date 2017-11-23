@@ -1,4 +1,20 @@
-#Version 1.2
+"""
+change bets 0.2 0.4 0.6 0.8 och 1 och taa vinster
+från veikkaus pika pokeri
+find a way to remove folders in github och eller renaming
+Sök andra logical saker som går att förminska
+Försök söka hur man kan save game att int(money) sparas i en fil och kan sen bli läst pånytt för att load hur mycket money du hadd
+Ändra på revert och hold så att dom är motsatta vägen
+och söök hur man sku installera libraryn som gör så du kan use .svg images in game
+Try making only 5 hold buttons
+när man press hold så om det remove en number from change card blir button black annors så hålls den white
+Varje gång money updateras så gör en round(money,2)
+MAke bet buttonsena på samma plants det nu säger restart och make dom på samma sätt som du make bet
+make invisible hold button som är lika stor som alla korten med no text
+Make press [Any button to restart]
+och make make 1 2 3 4 5 to hold 
+make stand button first time deal
+"""
 import sys
 import fnmatch
 from random import shuffle
@@ -201,52 +217,52 @@ class Window(QMainWindow):
         cardValues.sort()
         if cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight royal flush in "+str(suit[0])
-            money+=round(bet*5*50, 2)
-            win="And won %s €"%(round(bet*5*50, 2))
+            money+=bet*800
+            win="And won %s €"%(round(bet*800, 2))
         elif 5 in pair:
             playerChoice="You got five of "+str(ranks[0]+"'s")
-            money+=round(bet*5*50, 2)
-            win="And won %s €"%(round(bet*5*50, 2))
+            money+=bet*800
+            win="And won %s €"%(round(bet*800, 2))
         elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight flush in "+str(suit[0])
-            money+=round(bet*5*37, 2)
-            win="And won %s €"%(round(bet*5*37, 2))
+            money+=bet*200
+            win="And won %s €"%(round(bet*200, 2))
         elif 4 in pair:
             for i in range(0, 2):
                 if pair[i]==4:
                     playerChoice="You got four of a kind with "+str(ranks[i]+"'s")
-                    money+=round(bet*5*25, 2)
-                    win="And won %s €"%(round(bet*5*25, 2))
+                    money+=bet*80
+                    win="And won %s €"%(round(bet*80, 2))
         elif 3 in pair and 2 in pair:
             I=1
             for i in range(0, 2):
                 if pair[i]==3 and pair[I]==2:
                     playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
-                    money+=round(bet*5*10, 2)
-                    win="And won %s €"%(round(bet*5*10, 2))
+                    money+=bet*30
+                    win="And won %s €"%(round(bet*30, 2))
                 I-=1
         elif suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a flush in "+str(suit[0])
-            money+=round(bet*5*7, 2)
-            win="And won %s €"%(round(bet*5*7, 2))
+            money+=bet*15
+            win="And won %s €"%(round(bet*15, 2))
         elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 or (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1):
             playerChoice="You got a straight"
-            money+=round(bet*5*5, 2)
-            win="And won %s €"%(round(bet*5*5, 2))
+            money+=bet*10
+            win="And won %s €"%(round(bet*10, 2))
         elif 3 in pair:
             for i in range(0, 3):
                 if pair[i]==3:
                     playerChoice="You got a tripple of "+str(ranks[i]+"'s")
-                    money+=round(bet*5*2, 2)
-                    win="And won %s €"%(round(bet*5*2, 2))
+                    money+=bet*5
+                    win="And won %s €"%(round(bet*5, 2))
                     
         elif pair.count(2)==2:
             II,I=0,1
             for i in range(0, 3):
                 if pair[II]==2 and pair[I]==2:
                     playerChoice="You got two pairs one of "+str(ranks[II]+"'s")+str(" and one of ")+str(ranks[I]+"'s")
-                    money+=round(bet*5, 2)
-                    win="And won %s €"%(round(bet*5, 2))
+                    money+=bet*3
+                    win="And won %s €"%(round(bet*3, 2))
                 if I==1:
                     I+=1
                 elif I==2:
@@ -255,8 +271,11 @@ class Window(QMainWindow):
             for i in range(0, 5):
                 if pair[i]==2:
                     playerChoice="You got a pair of "+str(ranks[i]+"'s")
-                    money-=bet
-                    win="And lost %s €"%(round(bet, 2))
+                    if ranks[i][:1] in ("Q", "J", "K", "A"):
+                        win="And lost nothing"
+                    else:
+                        money-=bet
+                        win="And lost %s €"%(round(bet, 2))
         elif "Ace" in ranks:
             playerChoice="You got an Ace high"
             money-=bet
@@ -278,6 +297,7 @@ class Window(QMainWindow):
             playerChoice=str("You got a ")+str(max(cardValues))+str(" high")
             money-=bet
             win="And lost %s €"%(round(bet, 2))
+        print(ranks)
         self.player.setText(playerChoice)
         self.player.setStyleSheet(("background-color: white;"))
         self.dealer.setText(win)
