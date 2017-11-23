@@ -1,20 +1,4 @@
-"""
-change bets 0.2 0.4 0.6 0.8 och 1 och taa vinster
-från veikkaus pika pokeri
-find a way to remove folders in github och eller renaming
-Sök andra logical saker som går att förminska
-Försök söka hur man kan save game att int(money) sparas i en fil och kan sen bli läst pånytt för att load hur mycket money du hadd
-Ändra på revert och hold så att dom är motsatta vägen
-och söök hur man sku installera libraryn som gör så du kan use .svg images in game
-Try making only 5 hold buttons
-när man press hold så om det remove en number from change card blir button black annors så hålls den white
-Varje gång money updateras så gör en round(money,2)
-MAke bet buttonsena på samma plants det nu säger restart och make dom på samma sätt som du make bet
-make invisible hold button som är lika stor som alla korten med no text
-Make press [Any button to restart]
-och make make 1 2 3 4 5 to hold 
-make stand button first time deal
-"""
+#Version 1.2
 import sys
 import fnmatch
 from random import shuffle
