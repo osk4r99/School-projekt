@@ -1,8 +1,8 @@
-#Version 1.2
+#Version 1.3
 import sys
 import fnmatch
 from random import shuffle
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory, QFileDialog
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 
 class Window(QMainWindow):
@@ -26,7 +26,17 @@ class Window(QMainWindow):
         StyleChange4.setShortcut("Ctrl+Alt+W")
         StyleChange4.setStatusTip("Change style to Windows")
         StyleChange4.triggered.connect(lambda: self.style_set("Windows"))
+        
+        saveFile = QAction("&Save File", self)
+        saveFile.setShortcut("Ctrl+S")
+        saveFile.setStatusTip('Save File')
+        saveFile.triggered.connect(self.file_save)
 
+        loadFile = QAction("&Load File", self)
+        loadFile.setShortcut("Ctrl+L")
+        loadFile.setStatusTip('Load File')
+        loadFile.triggered.connect(self.load_file)
+        
         self.statusBar().showMessage('Message in statusbar.')  
 
         mainMenu = self.menuBar()
@@ -35,6 +45,8 @@ class Window(QMainWindow):
         fileMenu.addAction(Exit)
         editMenu.addAction(StyleChange1)
         editMenu.addAction(StyleChange4)
+        fileMenu.addAction(saveFile)
+        fileMenu.addAction(loadFile)
 
         sshFile="style.css"
         with open(sshFile,"r") as fh:
@@ -52,9 +64,9 @@ class Window(QMainWindow):
         btn.append(QPushButton("Continue", self))
         btn.append(QPushButton("Deal", self))
         btnB.append(QPushButton("Bet 0,20 €", self))
-        btnB.append(QPushButton("Bet 0,40 €", self))
-        btnB.append(QPushButton("Bet 0,80 €", self))
-        btnB.append(QPushButton("Bet  1 €", self))
+        btnB.append(QPushButton("Bet 0,50 €", self))
+        btnB.append(QPushButton("Bet 1 €", self))
+        btnB.append(QPushButton("Bet 2 €", self))
         btnC.append(QPushButton("Hold", self))
         btnC.append(QPushButton("Hold", self))
         btnC.append(QPushButton("Hold", self))
@@ -85,17 +97,17 @@ class Window(QMainWindow):
         bet=0.2
         btnB[0].setShortcut("1")
 
-        btnB[2].clicked.connect(lambda: self.bet(0.8, 2))
+        btnB[2].clicked.connect(lambda: self.bet(1, 2))
         btnB[2].resize(100, 50)
         btnB[2].move(400,  100)
         btnB[2].setShortcut("3")
 
-        btnB[1].clicked.connect(lambda: self.bet(0.4, 1))
+        btnB[1].clicked.connect(lambda: self.bet(0.5, 1))
         btnB[1].resize(100, 50)
         btnB[1].move(300,  100)
         btnB[1].setShortcut("2")
     
-        btnB[3].clicked.connect(lambda: self.bet(1, 3))
+        btnB[3].clicked.connect(lambda: self.bet(2, 3))
         btnB[3].resize(100, 50)
         btnB[3].move(500,  100)
         btnB[3].setShortcut("4")
@@ -141,8 +153,8 @@ class Window(QMainWindow):
     def continueG(self):
         btn[0].setShortcut("")
         global changeCard, card, bet, money
-        win=""
-        ans=""
+        suit, pair, ranks, cardValues = [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]
+        win, ans, playerChoice="", "", ""
         for i in changeCard:
             ans+=i
         i=len(changeCard)-1
@@ -201,12 +213,12 @@ class Window(QMainWindow):
         cardValues.sort()
         if cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight royal flush in "+str(suit[0])
-            money+=bet*800
-            win="And won %s €"%(round(bet*800, 2))
+            money+=bet*976
+            win="And won %s €"%(round(bet*976, 2))
         elif 5 in pair:
             playerChoice="You got five of "+str(ranks[0]+"'s")
-            money+=bet*800
-            win="And won %s €"%(round(bet*800, 2))
+            money+=bet*976
+            win="And won %s €"%(round(bet*976, 2))
         elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight flush in "+str(suit[0])
             money+=bet*200
@@ -215,15 +227,15 @@ class Window(QMainWindow):
             for i in range(0, 2):
                 if pair[i]==4:
                     playerChoice="You got four of a kind with "+str(ranks[i]+"'s")
-                    money+=bet*80
-                    win="And won %s €"%(round(bet*80, 2))
+                    money+=bet*50
+                    win="And won %s €"%(round(bet*50, 2))
         elif 3 in pair and 2 in pair:
             I=1
             for i in range(0, 2):
                 if pair[i]==3 and pair[I]==2:
                     playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
-                    money+=bet*30
-                    win="And won %s €"%(round(bet*30, 2))
+                    money+=bet*25
+                    win="And won %s €"%(round(bet*25, 2))
                 I-=1
         elif suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a flush in "+str(suit[0])
@@ -237,16 +249,16 @@ class Window(QMainWindow):
             for i in range(0, 3):
                 if pair[i]==3:
                     playerChoice="You got a tripple of "+str(ranks[i]+"'s")
-                    money+=bet*5
-                    win="And won %s €"%(round(bet*5, 2))
+                    money+=bet*4
+                    win="And won %s €"%(round(bet*4, 2))
                     
         elif pair.count(2)==2:
             II,I=0,1
             for i in range(0, 3):
                 if pair[II]==2 and pair[I]==2:
                     playerChoice="You got two pairs one of "+str(ranks[II]+"'s")+str(" and one of ")+str(ranks[I]+"'s")
-                    money+=bet*3
-                    win="And won %s €"%(round(bet*3, 2))
+                    money+=bet*2
+                    win="And won %s €"%(round(bet*2, 2))
                 if I==1:
                     I+=1
                 elif I==2:
@@ -255,11 +267,12 @@ class Window(QMainWindow):
             for i in range(0, 5):
                 if pair[i]==2:
                     playerChoice="You got a pair of "+str(ranks[i]+"'s")
-                    if ranks[i][:1] in ("Q", "J", "K", "A"):
-                        win="And lost nothing"
-                    else:
-                        money-=bet
-                        win="And lost %s €"%(round(bet, 2))
+#                    if ranks[i][:1] in ("Q", "J", "K", "A"):
+#                        win="And lost nothing"
+#                    else:
+#uncomment this and indent money- bet and win= for no loss with jacks or beter
+                    money-=bet
+                    win="And lost %s €"%(round(bet, 2))
         elif "Ace" in ranks:
             playerChoice="You got an Ace high"
             money-=bet
@@ -299,9 +312,6 @@ class Window(QMainWindow):
         btnB[3].setShortcut("4")
         btnB[2].resize(100, 50)
         btnB[3].resize(100, 50)
-        #Add here make restart button resize
-
-
     def empty(self):
         global drawnCards, cardValue, indent, pic, p1
         for i in range(0, len(pic)):
@@ -322,13 +332,8 @@ class Window(QMainWindow):
         for i in range(0, 4):
             btnB[i].setStyleSheet("background-color:none;")
         btnB[index].setStyleSheet("background-color:black;")
-        if bet>money:
-            bet=money
-        if bet<0:
-            bet=0
-#        card = self.cardPic(ans, card, 150)
     def deal(self):
-        global card
+        global card, bet, money
         btn[1].setShortcut("")
         self.resize()
         btn[0].resize(100, 50)
@@ -343,6 +348,8 @@ class Window(QMainWindow):
         btnC[3].setShortcut("4")
         btnC[4].resize(100, 50)
         btnC[4].setShortcut("5")
+        if bet>money:
+            bet=money
         card = self.cardPic("12345", card, 150)
 
     def cardPic(self, ans, card, line):
@@ -365,7 +372,7 @@ class Window(QMainWindow):
         return card
     def restart(self):
         btn[3].setShortcut("")
-        global suit, card, pair, ranks, cardValues, playerChoice, drawn, changeCard
+        global card, drawn, changeCard
         self.resize()
         self.win.setText("")
         self.dealer.setText("")
@@ -374,8 +381,7 @@ class Window(QMainWindow):
         self.player.setStyleSheet(("background-color: transparent;"))
         self.win.setStyleSheet(("background-color: transparent;"))
         self.empty()
-        playerChoice=False
-        suit, card, pair, ranks, cardValues = [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]
+        card = [0,0,0,0,0]
         shuffle(cardDeck)
         changeCard=["1", "2", "3", "4", "5"]
         btnC[0].setStyleSheet(("background-color: none;"))
@@ -399,8 +405,42 @@ class Window(QMainWindow):
         else:
             changeCard.append(str(n))
             btnC[int(n)-1].setStyleSheet(("background-color: none;"))
-#        btnC[big].resize(100, 50)
-#        btnC[small].resize(0, 0)
+    def file_save(self):
+        global money
+        tWon=69
+        tLos=1000
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self, "Save file",  "",
+                                                  "All Files (*);;Text Files (*.txt)", options=options)
+        if fileName:
+            print(fileName)
+        try:
+            file = open(fileName,'w')
+            file.write("%s\n%s\n%s"%(str(money), str(tWon), str(tLos)))
+            file.close()
+        except FileNotFoundError:
+            pass
+    def load_file(self):
+        global money, tWon, tLos
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "Load file",  "",
+                                                  "All Files (*);;Text Files (*.txt)", options=options)
+        if fileName:
+            print(fileName)
+        try:
+            file = open(fileName, "r")
+            content = file.readlines()
+            # you may also want to remove whitespace characters like `\n` at the end of each line
+            content = [x.strip() for x in content]
+            print(content)
+            money=content[0]
+            tWon=content[1]
+            tLos=content[2]
+            self.money.setText("Money %s €"%(str(money)))
+        except FileNotFoundError:
+            pass
     def close_application(self):
         sys.exit()
 def run():
@@ -421,8 +461,7 @@ for a in range(0, ans):
             var = "%s of %s"%(cards[i], color[j])
             cardDeck.append(var)
 shuffle(cardDeck)
-playerChoice=False
-suit, card, pair, ranks, cardValues = [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]
+card = [0,0,0,0,0]
 p1=0
 card.sort()
 indent, pic, p1, win, drawn=100, [], 0, 0, 0
