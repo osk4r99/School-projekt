@@ -152,7 +152,7 @@ class Window(QMainWindow):
         self.show()
     def continueG(self):
         btn[0].setShortcut("")
-        global changeCard, card, bet, money
+        global changeCard, card, bet, money, tWon, tLos
         suit, pair, ranks, cardValues = [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]
         win, ans, playerChoice="", "", ""
         for i in changeCard:
@@ -214,20 +214,24 @@ class Window(QMainWindow):
         if cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight royal flush in "+str(suit[0])
             money+=bet*976
+            tWon+=bet*976
             win="And won %s €"%(round(bet*976, 2))
         elif 5 in pair:
             playerChoice="You got five of "+str(ranks[0]+"'s")
             money+=bet*976
+            tWon+=bet*976
             win="And won %s €"%(round(bet*976, 2))
         elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight flush in "+str(suit[0])
             money+=bet*200
+            tWon+=bet*200
             win="And won %s €"%(round(bet*200, 2))
         elif 4 in pair:
             for i in range(0, 2):
                 if pair[i]==4:
                     playerChoice="You got four of a kind with "+str(ranks[i]+"'s")
                     money+=bet*50
+                    tWon+=bet*50
                     win="And won %s €"%(round(bet*50, 2))
         elif 3 in pair and 2 in pair:
             I=1
@@ -235,21 +239,25 @@ class Window(QMainWindow):
                 if pair[i]==3 and pair[I]==2:
                     playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
                     money+=bet*25
+                    tWon+=bet*25
                     win="And won %s €"%(round(bet*25, 2))
                 I-=1
         elif suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a flush in "+str(suit[0])
             money+=bet*15
+            tWon+=bet*15
             win="And won %s €"%(round(bet*15, 2))
         elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 or (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1):
             playerChoice="You got a straight"
             money+=bet*10
+            tWon+=bet*10
             win="And won %s €"%(round(bet*10, 2))
         elif 3 in pair:
             for i in range(0, 3):
                 if pair[i]==3:
                     playerChoice="You got a tripple of "+str(ranks[i]+"'s")
                     money+=bet*4
+                    tWon+=bet*4
                     win="And won %s €"%(round(bet*4, 2))
                     
         elif pair.count(2)==2:
@@ -258,6 +266,7 @@ class Window(QMainWindow):
                 if pair[II]==2 and pair[I]==2:
                     playerChoice="You got two pairs one of "+str(ranks[II]+"'s")+str(" and one of ")+str(ranks[I]+"'s")
                     money+=bet*2
+                    tWon+=bet*2
                     win="And won %s €"%(round(bet*2, 2))
                 if I==1:
                     I+=1
@@ -272,27 +281,33 @@ class Window(QMainWindow):
 #                    else:
 #uncomment this and indent money- bet and win= for no loss with jacks or beter
                     money-=bet
+                    tLos+=bet
                     win="And lost %s €"%(round(bet, 2))
         elif "Ace" in ranks:
             playerChoice="You got an Ace high"
             money-=bet
+            tLos+=bet
             win="And lost %s €"%(round(bet, 2))
         elif "King" in ranks:
             playerChoice="You got a King high"
             money-=bet
+            tLos+=bet
             win="And lost %s €"%(round(bet, 2))
             
         elif "Queen" in ranks:
             playerChoice="You got a Queen high"
             money-=bet
+            tLos+=bet
             win="And lost %s €"%(round(bet, 2))
         elif "Jack" in ranks:
             playerChoice="You got a Jack high"
             money-=bet
+            tLos+=bet
             win="And lost %s €"%(round(bet, 2))
         else:
             playerChoice=str("You got a ")+str(max(cardValues))+str(" high")
             money-=bet
+            tLos+=bet
             win="And lost %s €"%(round(bet, 2))
         print(ranks)
         self.player.setText(playerChoice)
@@ -332,6 +347,7 @@ class Window(QMainWindow):
         for i in range(0, 4):
             btnB[i].setStyleSheet("background-color:none;")
         btnB[index].setStyleSheet("background-color:black;")
+#        card = self.cardPic(ans, card, 150)
     def deal(self):
         global card, bet, money
         btn[1].setShortcut("")
@@ -406,9 +422,7 @@ class Window(QMainWindow):
             changeCard.append(str(n))
             btnC[int(n)-1].setStyleSheet(("background-color: none;"))
     def file_save(self):
-        global money
-        tWon=69
-        tLos=1000
+        global money, tLos, tWon
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(self, "Save file",  "",
@@ -463,6 +477,7 @@ for a in range(0, ans):
 shuffle(cardDeck)
 card = [0,0,0,0,0]
 p1=0
+tWon, tLos=0, 0
 card.sort()
 indent, pic, p1, win, drawn=100, [], 0, 0, 0
 run()
