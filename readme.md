@@ -13,4 +13,4 @@ A casino game in python
 ## Instructions
 - Some programs require pyqt5
 simpy run "sudo apt-get install python3-pyqt5" if images does not show just install the pyqt5 svg library
-- and if you use Windows then lookup how to install pyqt4 for windows
+- and if you use Windows then lookup how to install pyqt5 for windows
