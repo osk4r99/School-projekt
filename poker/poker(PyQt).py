@@ -449,12 +449,12 @@ class Window(QMainWindow):
             # you may also want to remove whitespace characters like `\n` at the end of each line
             content = [x.strip() for x in content]
             print(content)
-            money=content[0]
-            tWon=content[1]
-            tLos=content[2]
+            money=int(content[0])
+            tWon=int(content[1])
+            tLos=int(content[2])
             self.money.setText("Money %s €"%(str(money)))
             #add here file.close() it may fix crashing error
-            #file.close()
+            file.close()
         except FileNotFoundError:
             pass
     def close_application(self):
