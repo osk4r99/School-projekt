@@ -453,6 +453,8 @@ class Window(QMainWindow):
             tWon=content[1]
             tLos=content[2]
             self.money.setText("Money %s €"%(str(money)))
+            #add here file.close() it may fix crashing error
+            #file.close()
         except FileNotFoundError:
             pass
     def close_application(self):
