@@ -15,5 +15,5 @@ A casino game in python
 - Some programs require pyqt5
 simpy run "sudo apt-get install python3-pyqt5" if images does not show just install the pyqt5 svg library (should be included in python3-pyqt5)
 - On windows use "pip install pyqt5"
-- You can find a precompiled windows version of this game on (tested on windows 10)
+- You can find a precompiled windows version of this game on (tested on windows 7)
 - https://www.dropbox.com/s/j0efq29bvxaii6t/poker%28PyQt%29.zip?dl=0
