@@ -13,6 +13,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #PyQt5-Poker version 1.4
+
+#Connect till database username password money
+#make locked buttons more grayed out typ gray background
+#SQLITE CONNECT efter man enter uname password and click button (maby only uname)
+# sen också create user password
+# sen save sku UPDATE rowen
 import sys
 import fnmatch
 from random import shuffle
@@ -123,6 +129,9 @@ class Window(QMainWindow):
         self.card = [0,0,0,0,0]
         self.pic = []
         self.changeCard=["1", "2", "3", "4", "5"]
+        self.drawn = 0
+        self.p1 = 0
+        self.indent=100
         self.btnB[0].setShortcut("1")
 
         self.btnB[2].clicked.connect(lambda: self.bet(1, 2))
@@ -205,6 +214,7 @@ class Window(QMainWindow):
                 if cards[x][0:2] in self.card[i][0:2]:
                     if self.card[i][0:2] not in ranks:
                         pair[i]=(fnmatch.filter(self.card, '%s*'%(cards[x])))
+                        ranks[i]=self.card[i][0:2]
                         ranks[i]=self.card[i][0:2]
                         cardValues[i]=x+1
         for i in range(0, len(ranks)):
@@ -356,10 +366,9 @@ class Window(QMainWindow):
         for i in range(0, len(self.btnB)):
             self.btnB[i].setEnabled(True) 
     def empty(self):
-        global drawnCards, cardValue, indent, p1
         for i in range(0, len(self.pic)):
             self.pic[i].resize(0, 0)
-        indent, p1, self.pic=100, 0, []
+        self.indent, self.p1, self.pic=100, 0, []
     def resize(self):
         for i in range(0, len(self.btnC)):
             self.btnC[i].setEnabled(False) 
@@ -380,25 +389,23 @@ class Window(QMainWindow):
         self.card = self.cardPic("12345", 150)
 
     def cardPic(self, ans, line):
-        global drawn, indent, p1
         I = 1
         for i in range(0, 5):
             if str(I) in ans:
-                self.card[i]=cardDeck[drawn]
-                drawn+=1
+                self.card[i]=cardDeck[self.drawn]
+                self.drawn+=1
             I+=1
         I = 1
         for i in range(0, 5):
             self.pic.append(QLabel(self))
-            self.pic[p1].setPixmap(QPixmap("img/%s.svg"%(self.card[i])))
-            self.pic[p1].setGeometry(indent, line, 169, 245)
-            indent+=200
-            self.pic[p1].show()
-            p1+=1
+            self.pic[self.p1].setPixmap(QPixmap("img/%s.svg"%(self.card[i])))
+            self.pic[self.p1].setGeometry(self.indent, line, 169, 245)
+            self.indent+=200
+            self.pic[self.p1].show()
+            self.p1+=1
             I+=1
         return self.card
     def restart(self):
-        global drawn
         self.resize()
         self.win.setText("")
         self.dealer.setText("")
@@ -415,7 +422,7 @@ class Window(QMainWindow):
         self.btnC[2].setStyleSheet(("background-color: none;"))
         self.btnC[3].setStyleSheet(("background-color: none;"))
         self.btnC[4].setStyleSheet(("background-color: none;"))
-        drawn=0
+        self.drawn=0
         self.deal()
     def style_set(self, n):
         QApplication.setStyle(QStyleFactory.create(n))
@@ -470,7 +477,7 @@ def run():
     app = QApplication(sys.argv)
     GUI = Window()
     sys.exit(app.exec_())
-drawn, cardDeck = 0, []
+cardDeck = []
 ans=1
 #Put in ans how many decks you want to play with
 for a in range(0, ans):
@@ -478,6 +485,4 @@ for a in range(0, ans):
         for i in ("Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"):
             cardDeck.append("%s of %s"%(i, j))
 shuffle(cardDeck)
-p1=0
-indent, p1, win, drawn=100,0, 0, 0
 run()
