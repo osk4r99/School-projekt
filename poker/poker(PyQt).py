@@ -22,6 +22,7 @@
 # story in game pay bank debt 1 k easy 5 k med 10 k hard in 3 H maby more if needed
 # MAke att dina money blir removed före du ha change cards att du inte kan cheat de system save game mid hand
 # Add possibility to delete a load save
+# When a item has BG color black set text color WHITE
 import sys
 import fnmatch
 import sqlite3 as lite
@@ -139,7 +140,7 @@ class Window(QMainWindow):
         self.btnB[0].clicked.connect(lambda: self.bet(0.2, 0))
         self.btnB[0].resize(0, 0)
         self.btnB[0].move(200,  100)
-        self.btnB[0].setStyleSheet("background-color:black;")
+        self.btnB[0].setStyleSheet("background-color:black;color:white;")
         self.var_bet = 0.2
         self.var_money = 100
         self.tWon = 0 
@@ -448,7 +449,7 @@ class Window(QMainWindow):
         self.var_bet=n
         for i in range(0, 4):
             self.btnB[i].setStyleSheet("background-color:none;")
-        self.btnB[index].setStyleSheet("background-color:black;")
+        self.btnB[index].setStyleSheet("background-color:black;color:white;")
 #        self.card = self.cardPic(ans, 150)
     def deal(self):
         self.resize()
@@ -503,7 +504,7 @@ class Window(QMainWindow):
                 if self.changeCard[i] == n:
                     temp=i
             self.changeCard.pop(temp)
-            self.btnC[int(n)-1].setStyleSheet(("background-color: Black;"))
+            self.btnC[int(n)-1].setStyleSheet("background-color:black;color:white;")
         else:
             self.changeCard.append(str(n))
             self.btnC[int(n)-1].setStyleSheet(("background-color: none;"))
