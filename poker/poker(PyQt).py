@@ -19,10 +19,12 @@
 #SQLITE CONNECT efter man enter uname password and click button (maby only uname)
 # sen också create user password
 # sen save sku UPDATE rowen
+# story in game pay bank debt 1 k easy 5 k med 10 k hard in 3 H maby more if needed
 import sys
 import fnmatch
+import sqlite3 as lite
 from random import shuffle
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory, QFileDialog
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory, QFileDialog, QInputDialog
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 
 class Window(QMainWindow):
@@ -47,15 +49,17 @@ class Window(QMainWindow):
         StyleChange4.setStatusTip("Change style to Windows")
         StyleChange4.triggered.connect(lambda: self.style_set("Windows"))
         
-        saveFile = QAction("&Save File", self)
-        saveFile.setShortcut("Ctrl+S")
-        saveFile.setStatusTip('Save File')
-        saveFile.triggered.connect(self.file_save)
-
-        loadFile = QAction("&Load File", self)
-        loadFile.setShortcut("Ctrl+L")
-        loadFile.setStatusTip('Load File')
-        loadFile.triggered.connect(self.load_file)
+        self.saveFile = QAction("&Save File", self)
+        self.saveFile.setShortcut("Ctrl+S")
+        self.saveFile.setStatusTip('Save File')
+        self.saveFile.triggered.connect(self.file_save)
+        self.saveFile.setEnabled(False) 
+        
+        self.loadFile = QAction("&Load File", self)
+        self.loadFile.setShortcut("Ctrl+L")
+        self.loadFile.setStatusTip('Load File')
+        self.loadFile.triggered.connect(self.load_file)
+        
         
         self.statusBar().showMessage('Message in statusbar.')  
 
@@ -65,8 +69,8 @@ class Window(QMainWindow):
         fileMenu.addAction(Exit)
         editMenu.addAction(StyleChange1)
         editMenu.addAction(StyleChange4)
-        fileMenu.addAction(saveFile)
-        fileMenu.addAction(loadFile)
+        fileMenu.addAction(self.saveFile)
+        fileMenu.addAction(self.loadFile)
 
         sshFile="style.css"
         with open(sshFile,"r") as fh:
@@ -89,7 +93,12 @@ class Window(QMainWindow):
         self.btnC.append(QPushButton("Hold", self))
 
         self.resize()
-
+        
+        self.start = QPushButton("Start", self)
+        self.start.clicked.connect(self.gettext)
+        self.start.resize(100, 50)
+        self.start.move(500, 500)
+        
         self.btnC[0].clicked.connect(lambda: self.change("1"))
         self.btnC[0].move(130,  400)
         self.btnC[0].resize(100, 50)
@@ -184,7 +193,46 @@ class Window(QMainWindow):
     
         self.show()
         
+    def gettext(self):
+        text, ok = QInputDialog.getText(self, 'Text Input Dialog', 'Enter your name:\n(Enter a new name to create new user\nEnter previous name to load)') 
+        print(text)
+        print(ok)
+        con = None
+        try:
+            con = lite.connect('player.db')
+            cur = con.cursor()    
+            cur.execute("SELECT * FROM player")
+            
+        except:
+            cur.execute("CREATE TABLE player(Id INTEGER PRIMARY KEY, Name TEXT, Money REAL);")
+
+        finally:
+            
+            if con:
+                con.close()
+                
+        self.name = text
+
+        con = lite.connect('player.db')
+
+        with con:    
+            cur = con.cursor()
+            cur.execute("SELECT * FROM player")
+            rows = cur.fetchall()
+            exists = 0
+            for row in rows:
+                if row[1]==self.name:
+                    exists=1
+            if exists == 0:
+                cur.execute("INSERT INTO player(Name,Money) VALUES ('%s',100);" % (self.name))
+            cur.execute("SELECT Money FROM player WHERE Name=='%s'" % self.name)
+            rows = cur.fetchall()
+            for row in rows:
+                self.var_money = row[0]
+                self.money.setText("Money %s €"%(str(self.var_money)))
+                self.saveFile.setEnabled(True) 
         
+
     def play(self):
         if self.play_test == 1:
             self.deal()
@@ -438,45 +486,63 @@ class Window(QMainWindow):
             self.changeCard.append(str(n))
             self.btnC[int(n)-1].setStyleSheet(("background-color: none;"))
     def file_save(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(self, "Save file",  "",
-                                                  "All Files (*);;Text Files (*.txt)", options=options)
-        if fileName:
-            print(fileName)
-        try:
-            file = open(fileName,'w')
-            file.write("%s\n%s\n%s"%(str(self.var_money), str(self.tWon), str(self.tLos)))
-            file.close()
-        except FileNotFoundError:
-            pass
+        con = lite.connect('player.db')
+
+        with con:    
+            cur = con.cursor()
+            print(self.var_money)
+            print(self.name)
+            cur.execute("UPDATE player SET Money=%s WHERE Name='%s'" % (self.var_money, self.name))
+#            cur.execute("SELECT * FROM player WHERE Name=='%s'" % self.name)
+#            rows = cur.fetchall()
+#            for row in rows:
+#                print(row)
+        
+#        options = QFileDialog.Options()
+#        options |= QFileDialog.DontUseNativeDialog
+#        fileName, _ = QFileDialog.getSaveFileName(self, "Save file",  "",
+#                                                  "All Files (*);;Text Files (*.txt)", options=options)
+#        if fileName:
+#            print(fileName)
+#        try:
+#            file = open(fileName,'w')
+#            file.write("%s\n%s\n%s"%(str(self.var_money), str(self.tWon), str(self.tLos)))
+#            file.close()
+#        except FileNotFoundError:
+#            pass
     def load_file(self):
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "Load file",  "",
-                                                  "All Files (*);;Text Files (*.txt)", options=options)
-        if fileName:
-            print(fileName)
-        try:
-            file = open(fileName, "r")
-            content = file.readlines()
-            # you may also want to remove whitespace characters like `\n` at the end of each line
-            content = [x.strip() for x in content]
-            print(content)
-            self.var_money=int(content[0])
-            self.tWon=int(content[1])
-            self.tLos=int(content[2])
-            self.money.setText("Money %s €"%(str(self.var_money)))
-            #add here file.close() it may fix crashing error
-            file.close()
-        except FileNotFoundError:
-            pass
+        con = lite.connect('player.db')
+
+        with con:    
+            cur = con.cursor()
+            cur.execute("UPDATE player SET Money=%s WHERE Name='%s'" % (self.money, self.name))
+            cur.execute("SELECT * FROM player WHERE Name=='%s'" % self.name)
+            rows = cur.fetchall()
+            for row in rows:
+                print(row)
+#        options = QFileDialog.Options()
+#        options |= QFileDialog.DontUseNativeDialog
+#        fileName, _ = QFileDialog.getOpenFileName(self, "Load file",  "",
+#                                                  "All Files (*);;Text Files (*.txt)", options=options)
+#        if fileName:
+#            print(fileName)
+#        try:
+#            file = open(fileName, "r")
+#            content = file.readlines()
+#            # you may also want to remove whitespace characters like `\n` at the end of each line
+#            content = [x.strip() for x in content]
+#            print(content)
+#            self.var_money=int(content[0])
+#            self.tWon=int(content[1])
+#            self.tLos=int(content[2])
+#            self.money.setText("Money %s €"%(str(self.var_money)))
+#            #add here file.close() it may fix crashing error
+#            file.close()
+#        except FileNotFoundError:
+#            pass
     def close_application(self):
         sys.exit()
-def run():
-    app = QApplication(sys.argv)
-    GUI = Window()
-    sys.exit(app.exec_())
+
 cardDeck = []
 ans=1
 #Put in ans how many decks you want to play with
@@ -485,4 +551,7 @@ for a in range(0, ans):
         for i in ("Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"):
             cardDeck.append("%s of %s"%(i, j))
 shuffle(cardDeck)
-run()
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    Window()
+    sys.exit(app.exec_())
