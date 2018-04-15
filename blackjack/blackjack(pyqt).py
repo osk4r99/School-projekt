@@ -13,8 +13,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #PyQt5-BlackJack Version 1.1
+
+# WHY IS I GLOBAL ???
+# IT IS USED TO IDENTIFY IF YOU DO FIRST HIT OR SECOUND HIT
+# MAKE INDENT IN DUAL LIST WITH BOTH INDENT OF PLAYER AND DEALER
 import sys
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from random import shuffle
 
@@ -68,46 +72,60 @@ class Window(QMainWindow):
         self.home()
         
     def home(self):
-        global btn, money, pic
-        btn=[]
-        btn.append(QPushButton("Hit", self))
-        btn.append(QPushButton("Stand", self))
-        btn.append(QPushButton("Continue", self))
-        btn.append(QPushButton("Restart?", self))
-        btn.append(QPushButton("Bet 10 €", self))
-        btn.append(QPushButton("Bet 50 €", self))
-        btn.append(QPushButton("Bet 100 €", self))
-        btn.append(QPushButton("Bet 1000 €", self))
+        self.btn=[]
+        self.btnB=[]
+        self.btn.append(QPushButton("Hit", self))
+        self.btn.append(QPushButton("Stand", self))
+        self.btn.append(QPushButton("Restart?", self))
+        self.btnB.append(QPushButton("Bet 0,20 €", self))
+        self.btnB.append(QPushButton("Bet 0,50 €", self))
+        self.btnB.append(QPushButton("Bet 1 €", self))
+        self.btnB.append(QPushButton("Bet 2 €", self))
         
         self.resize()
+        self.var_bet = 0.2
+        self.var_money=100
+        self.pic = []
+        self.drawn = 0
+        self.picIndex = 0
+        self.indent=[150, 150]
+        # FIrst is player 2nd is dealer
+        self.btnB[0].clicked.connect(lambda: self.bet(0.2, 0))
+        self.btnB[0].resize(100, 50)
+        self.btnB[0].move(200,  100)
+        self.btnB[0].setEnabled(True)
+        self.btnB[0].setStyleSheet("background-color:black;color:white;")
+        self.btnB[0].setShortcut("1")
         
-        btn[4].clicked.connect(lambda: self.bet(10))
-        btn[4].resize(100, 50)
-        btn[4].move(0,  100)
+        self.btnB[2].clicked.connect(lambda: self.bet(1, 2))
+        self.btnB[2].resize(100, 50)
+        self.btnB[2].move(400,  100)
+        self.btnB[2].setEnabled(True)
+        self.btnB[2].setShortcut("3")
         
-        btn[6].clicked.connect(lambda: self.bet(100))
-        btn[6].resize(100, 50)
-        btn[6].move(200,  100)
+        self.btnB[1].clicked.connect(lambda: self.bet(0.5, 1))
+        self.btnB[1].resize(100, 50)
+        self.btnB[1].move(300,  100)
+        self.btnB[1].setEnabled(True)
+        self.btnB[1].setShortcut("2")
         
-        btn[5].clicked.connect(lambda: self.bet(50))
-        btn[5].resize(100, 50)
-        btn[5].move(100,  100)
+        self.btnB[3].clicked.connect(lambda: self.bet(2, 3))
+        self.btnB[3].resize(100, 50)
+        self.btnB[3].move(500,  100)
+        self.btnB[3].setEnabled(True)
+        self.btnB[3].setShortcut("4")
         
-        btn[7].clicked.connect(lambda: self.bet(1000))
-        btn[7].resize(100, 50)
-        btn[7].move(300,  100)
+        self.btn[0].clicked.connect(self.hitMe)
+        self.btn[0].resize(100, 50)
+        self.btn[0].move(100,  100)
         
-        btn[0].clicked.connect(self.hitMe)
-        btn[0].resize(100, 50)
-        btn[0].move(100,  100)
-        
-        btn[3].clicked.connect(self.restart)
-        btn[3].move(100, 100)
+        self.btn[2].clicked.connect(self.restart)
+        self.btn[2].move(100, 100)
         
        
-        btn[1].clicked.connect(self.stand)
-        btn[1].move(0,  100)
-        self.money = QLabel(("Money %s €"%(str(money))), self)
+        self.btn[1].clicked.connect(self.stand)
+        self.btn[1].move(0,  100)
+        self.money = QLabel(("Money %s €"%(str(self.var_money))), self)
         self.money.setStyleSheet(("background-color: white;"))
         
         self.money.move(100, 50)
@@ -135,38 +153,52 @@ class Window(QMainWindow):
         
         self.show()
     def empty(self):
-        global drawnCards, cardValue, indentP, pic, p1, indentD, win, charlie
-        for i in range(0, len(pic)):
-            pic[i].resize(0, 0)
-        indentD, indentP, p1, pic, cardValue, drawnCards=150, 150, 0, [], [[], []], [[], []]
+        global drawnCards, cardValue, win, charlie
+        for i in range(0, len(self.pic)):
+            self.pic[i].resize(0, 0)
+        self.indent[0], self.indent[1], self.picIndex, self.pic, cardValue, drawnCards=150, 150, 0, [], [[], []], [[], []]
         win=0
         charlie=0
     def resize(self):
-        for i in range(0, len(btn)):
-            btn[i].resize(0, 0)
-    def bet(self, n):
-        global bet, money
-        bet=n
-        if bet>money:
-            bet=money
-        if bet<0:
-            bet=0
-        self.resize()
-        btn[0].resize(100, 50)
-    def cardDraw(self, drawncard, OneOrTwo, plyr, name, indent, line):
-        global drawn, win, drawnCards, cardValue, I, money, pic, p1, charlie
+        for i in range(0, len(self.btn)):
+            self.btn[i].resize(0, 0)
+        for i in range(0, len(self.btnB)):
+            self.btnB[i].setEnabled(False)
+    def bet(self, n, index):
+        self.var_bet=n
+        for i in range(0, 4):
+            self.btnB[i].setStyleSheet("background-color:none;")
+        self.btnB[index].setStyleSheet("background-color:black;color:white;")
+        if self.var_bet>self.var_money:
+            self.var_bet=self.var_money
+        if self.var_bet<0:
+            self.var_bet=0
+#        self.resize()
+#        self.btn[0].resize(100, 50)
+#    def bet(self, n):
+#        global bet, money
+#        bet=n
+#        if bet>money:
+#            bet=money
+#        if bet<0:
+#            bet=0
+#        self.resize()
+#        self.btn[0].resize(100, 50)
+    def cardDraw(self, handLength, OneOrTwo, plyr, name, indentIndex, line):
+        global win, drawnCards, cardValue, I,charlie
         hand=[]
-        for i in range(drawn, drawncard):
-            hand.append(cardDeck[drawn])
-            drawnCards[plyr].append(cardDeck[drawn])
-            pic.append(QLabel(self))
-            pic[p1].setPixmap(QPixmap("img/%s.svg"%(cardDeck[drawn])))
-            pic[p1].setGeometry(indent, line, 169, 245)
-            indent+=50
-            pic[p1].show()
-            p1+=1
+        # maby make range 0, n?
+        for i in range(0, handLength):
+            hand.append(cardDeck[self.drawn])
+            drawnCards[plyr].append(cardDeck[self.drawn])
+            self.pic.append(QLabel(self))
+            self.pic[self.picIndex].setPixmap(QPixmap("img/%s.svg"%(cardDeck[self.drawn])))
+            self.pic[self.picIndex].setGeometry(self.indent[indentIndex], line, 169, 245)
+            self.indent[indentIndex]+=50
+            self.pic[self.picIndex].show()
+            self.picIndex+=1
             
-            drawn+=1
+            self.drawn+=1
         for i in range(0, OneOrTwo):
             if "Ace" in hand[i]:
                 cardValue[plyr].append(11)
@@ -195,11 +227,14 @@ class Window(QMainWindow):
                 if plyr!=0:
                     self.stand()
             elif sum(cardValue[plyr])>=22:
-                card="%s got a %s wich is %s and got busted"%(name, cardDeck[drawn-1], sum(cardValue[plyr]))
+                print(cardDeck[self.drawn-1])
+                print(hand[0])
+                #DEBUG THIS
+                card="%s got a %s wich is %s and got busted"%(name, hand[0], sum(cardValue[plyr]))
                 self.resize()
                 if plyr==1:
                     self.check()
-                btn[3].resize(100, 50)
+                self.btn[2].resize(100, 50)
             else:
                 card="%s got a %s wich is a total of %s"%(name, hand[0], sum(cardValue[plyr]))
             if plyr==0:
@@ -208,7 +243,6 @@ class Window(QMainWindow):
             else:
                 self.player.setText(card)
                 self.player.setStyleSheet(("background-color: white;"))
-        return indent
     def testForAces(self, plyr):
         if sum(cardValue[plyr])>=22:
             for i in range(0, len(cardValue[plyr])):
@@ -219,37 +253,37 @@ class Window(QMainWindow):
                         cardValue[plyr][i]=1
                         break
     def check(self):
-        global win, money, cardValue, drawn, drawnCards, I, charlie
+        global win, cardValue, drawnCards, I, charlie
+        self.var_money=round(self.var_money, 2)
         if win == 1:
-            money+=bet*1.5
-            self.money.setText("Money %s €"%(str(money)))
+            self.var_money+=self.var_bet*1.5
+            self.money.setText("Money %s €"%(str(self.var_money)))
             self.win.setText("You won")
         elif charlie == 1:
-            money+=bet
-            self.money.setText("Money %s €"%(str(money)))
+            self.var_money+=self.var_bet
+            self.money.setText("Money %s €"%(str(self.var_money)))
             self.win.setText("You won")
         elif sum(cardValue[1])==sum(cardValue[0]):
             self.win.setText("Tie")
         elif (sum(cardValue[1])>=22 or sum(cardValue[1])<sum(cardValue[0])) and not sum(cardValue[0])>=22:
-            money-=bet
-            self.money.setText("Money %s €"%(str(money)))
+            self.var_money-=self.var_bet
+            self.money.setText("Money %s €"%(str(self.var_money)))
             self.win.setText("Dealer won")
         elif (sum(cardValue[0])>=22 or sum(cardValue[1])>sum(cardValue[0])) and not sum(cardValue[1])>=22:
-            money+=bet
-            self.money.setText("Money %s €"%(str(money)))
+            self.var_money+=self.var_bet
+            self.money.setText("Money %s €"%(str(self.var_money)))
             self.win.setText("You won")
         self.win.setStyleSheet(("background-color: white;"))
         shuffle(cardDeck)
-        print(cardDeck)
-        drawnCards, cardValue, I, win, drawn=[[], []], [[], []], -1, 0, 0
+#        print(cardDeck)
+        drawnCards, cardValue, I, win, self.drawn=[[], []], [[], []], -1, 0, 0
         self.resize()
-        btn[3].resize(100, 50)
+        self.btn[2].resize(100, 50)
     def restart(self):
         self.resize()
-        btn[4].resize(100, 50)
-        btn[6].resize(100, 50)
-        btn[7].resize(100, 50)
-        btn[5].resize(100, 50)
+        for i in range(0, len(self.btnB)):
+            self.btnB[i].setEnabled(True)
+        self.btn[0].resize(100, 50)
         self.win.setText("")
         self.dealer.setText("")
         self.player.setText("")
@@ -259,51 +293,48 @@ class Window(QMainWindow):
         self.empty()
     def stand(self):
         self.resize()
-        global drawn, indentD
         while True:
             if sum(cardValue[0])<=16 and sum(cardValue[1])!=0 and sum(cardValue[1])<=22:
-                indentD=self.cardDraw(drawn+1, 1, 0, "Dealer",indentD , 470)
+                self.cardDraw(1, 1, 0, "Dealer",1 , 470)
             else:
                 self.resize()
-                btn[3].resize(100, 50)
+                self.btn[2].resize(100, 50)
                 self.check()
                 break
     def style_set(self, n):
-        QWidget.QApplication.setStyle(QWidget.QStyleFactory.create(n))
+        QApplication.setStyle(QStyleFactory.create(n))
     def hitMe(self):
-        global I, indentP, indentD
+        for i in range(0, len(self.btnB)):
+            self.btnB[i].setEnabled(False)
+        global I
         if I<=-1:
             I=0
         if I==0:
-            btn[1].resize(100, 50)
-            indentP=self.cardDraw(drawn+2, 2, 1, "You",indentP , 150)
-            indentD=self.cardDraw(drawn+1, 1, 0, "Dealer",indentD , 470)
+            self.btn[1].resize(100, 50)
+            self.cardDraw(2, 2, 1, "You",0 , 150)
+            self.cardDraw(1, 1, 0, "Dealer",1 , 470)
         elif I>0:
-            indentP=self.cardDraw(drawn+1, 1, 1, "You", indentP, 150)
+            self.cardDraw(1, 1, 1, "You", 0, 150)
         I+=1
-        self.money.setText("Money %s €"%(str(money)))
-def run():
-    app = QApplication(sys.argv)
-    GUI = Window()
-    sys.exit(app.exec_())
+        self.var_money=round(self.var_money, 2)
+        self.money.setText("Money %s €"%(str(self.var_money)))
 I=0
-money=100
 drawnCards=[[], []]
 cardValue=[[], []]
 cardDeck=[]
-color=["Hearts", "Diamonds", "Spades", "Clubs"]
-card=["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
 ans=6
 #Put in ans how many decks you want to play with
 for a in range(0, ans):
-    for j in range(0, 4):
-        for i in range(0,13):
-            var="%s of %s"%(card[i], color[j])
-            cardDeck.append(var)
+    for j in ("Hearts", "Diamonds", "Spades", "Clubs"):
+        for i in ("2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"):
+            cardDeck.append("%s of %s"%(i, j))
 shuffle(cardDeck)
 print(cardDeck)
-for i in range(0, 10):
-    cardDeck[i]="Ace of Spades"
-indentP, indentD, pic, p1, win, drawn=150, 150, [], 0, 0, 0
+#for i in range(0, 10):
+#    cardDeck[i]="Ace of Spades"
+win = 0
 charlie=0
-run()
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    Window()
+    sys.exit(app.exec_())
