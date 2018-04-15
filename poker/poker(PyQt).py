@@ -20,6 +20,8 @@
 # sen också create user password
 # sen save sku UPDATE rowen
 # story in game pay bank debt 1 k easy 5 k med 10 k hard in 3 H maby more if needed
+# MAke att dina money blir removed före du ha change cards att du inte kan cheat de system save game mid hand
+# Add possibility to delete a load save
 import sys
 import fnmatch
 import sqlite3 as lite
@@ -95,40 +97,47 @@ class Window(QMainWindow):
         self.resize()
         
         self.start = QPushButton("Start", self)
-        self.start.clicked.connect(self.gettext)
-        self.start.resize(100, 50)
-        self.start.move(500, 500)
+        self.start.clicked.connect(self.loadsave)
+        self.start.resize(500, 300)
+        self.start.move(200, 200)
+        self.start.setStyleSheet('font-size: 100px;')
+        
+        self.delete = QPushButton("Delete", self)
+        #self.delete.clicked.connect(self.deletesave)
+        self.delete.resize(500, 300)
+        self.delete.move(700, 200)
+        self.delete.setStyleSheet('font-size: 100px;')
         
         self.btnC[0].clicked.connect(lambda: self.change("1"))
         self.btnC[0].move(130,  400)
-        self.btnC[0].resize(100, 50)
-        self.btnC[0].setShortcut("1")
-
+        self.btnC[0].resize(0, 0)
+        self.btnC[0].setEnabled(False)
+        
         self.btnC[1].clicked.connect(lambda: self.change("2"))
         self.btnC[1].move(330,  400)
-        self.btnC[1].resize(100, 50)
-        self.btnC[1].setShortcut("2")
+        self.btnC[1].resize(0, 0)
+        self.btnC[1].setEnabled(False)
 
         self.btnC[2].clicked.connect(lambda: self.change("3"))
         self.btnC[2].move(530,  400)
-        self.btnC[2].resize(100, 50)
-        self.btnC[2].setShortcut("3")
+        self.btnC[2].resize(0, 0)
+        self.btnC[2].setEnabled(False)
 
         self.btnC[3].clicked.connect(lambda: self.change("4"))
         self.btnC[3].move(730,  400)
-        self.btnC[3].resize(100, 50)
-        self.btnC[3].setShortcut("4")
+        self.btnC[3].resize(0, 0)
+        self.btnC[3].setEnabled(False)
 
         self.btnC[4].clicked.connect(lambda: self.change("5"))
         self.btnC[4].move(930,  400)
-        self.btnC[4].resize(100, 50)
-        self.btnC[4].setShortcut("5")
-        
+        self.btnC[4].resize(0, 0)
+        self.btnC[4].setEnabled(False)
+
         for i in range(0, len(self.btnB)):
             self.btnB[i].setEnabled(True) 
             
         self.btnB[0].clicked.connect(lambda: self.bet(0.2, 0))
-        self.btnB[0].resize(100, 50)
+        self.btnB[0].resize(0, 0)
         self.btnB[0].move(200,  100)
         self.btnB[0].setStyleSheet("background-color:black;")
         self.var_bet = 0.2
@@ -141,27 +150,27 @@ class Window(QMainWindow):
         self.drawn = 0
         self.p1 = 0
         self.indent=100
-        self.btnB[0].setShortcut("1")
+        self.btnB[0].setEnabled(False)
 
         self.btnB[2].clicked.connect(lambda: self.bet(1, 2))
-        self.btnB[2].resize(100, 50)
+        self.btnB[2].resize(0, 0)
         self.btnB[2].move(400,  100)
-        self.btnB[2].setShortcut("3")
+        self.btnB[2].setEnabled(False)
 
         self.btnB[1].clicked.connect(lambda: self.bet(0.5, 1))
-        self.btnB[1].resize(100, 50)
+        self.btnB[1].resize(0, 0)
         self.btnB[1].move(300,  100)
-        self.btnB[1].setShortcut("2")
+        self.btnB[1].setEnabled(False)
     
         self.btnB[3].clicked.connect(lambda: self.bet(2, 3))
-        self.btnB[3].resize(100, 50)
+        self.btnB[3].resize(0, 0)
         self.btnB[3].move(500,  100)
-        self.btnB[3].setShortcut("4")
+        self.btnB[3].setEnabled(False)
         
         self.btn.clicked.connect(self.play)
-        self.btn.resize(100, 50)
+        self.btn.resize(0, 0)
         self.btn.move(100,  100)
-        self.btn.setShortcut("H")
+        self.btn.setEnabled(False)
         
         self.money = QLabel(("Money %s €"%(str(self.var_money))), self)
         self.money.setStyleSheet(("background-color: white;"))
@@ -193,45 +202,58 @@ class Window(QMainWindow):
     
         self.show()
         
-    def gettext(self):
+    def loadsave(self):
         text, ok = QInputDialog.getText(self, 'Text Input Dialog', 'Enter your name:\n(Enter a new name to create new user\nEnter previous name to load)') 
         print(text)
         print(ok)
-        con = None
-        try:
-            con = lite.connect('player.db')
-            cur = con.cursor()    
-            cur.execute("SELECT * FROM player")
-            
-        except:
-            cur.execute("CREATE TABLE player(Id INTEGER PRIMARY KEY, Name TEXT, Money REAL);")
-
-        finally:
-            
-            if con:
-                con.close()
+        if ok:
+            con = None
+            try:
+                con = lite.connect('player.db')
+                cur = con.cursor()    
+                cur.execute("SELECT * FROM player")
                 
-        self.name = text
+            except:
+                cur.execute("CREATE TABLE player(Id INTEGER PRIMARY KEY, Name TEXT, Money REAL);")
 
-        con = lite.connect('player.db')
+            finally:
+                
+                if con:
+                    con.close()
+                    
+            self.name = text
 
-        with con:    
-            cur = con.cursor()
-            cur.execute("SELECT * FROM player")
-            rows = cur.fetchall()
-            exists = 0
-            for row in rows:
-                if row[1]==self.name:
-                    exists=1
-            if exists == 0:
-                cur.execute("INSERT INTO player(Name,Money) VALUES ('%s',100);" % (self.name))
-            cur.execute("SELECT Money FROM player WHERE Name=='%s'" % self.name)
-            rows = cur.fetchall()
-            for row in rows:
-                self.var_money = row[0]
-                self.money.setText("Money %s €"%(str(self.var_money)))
-                self.saveFile.setEnabled(True) 
-        
+            con = lite.connect('player.db')
+
+            with con:    
+                cur = con.cursor()
+                cur.execute("SELECT * FROM player")
+                rows = cur.fetchall()
+                exists = 0
+                for row in rows:
+                    if row[1]==self.name:
+                        exists=1
+                if exists == 0:
+                    cur.execute("INSERT INTO player(Name,Money) VALUES ('%s',100);" % (self.name))
+                cur.execute("SELECT Money FROM player WHERE Name=='%s'" % self.name)
+                cur.execute("SELECT Money FROM player WHERE Name=='%s'" % self.name)
+                rows = cur.fetchall()
+                for row in rows:
+                    self.var_money = row[0]
+                    self.money.setText("Money %s €"%(str(self.var_money)))
+                    self.saveFile.setEnabled(True) 
+            self.start.resize(0, 0)
+            self.delete.resize(0, 0)
+            self.btn.resize(100, 50)
+            self.btn.setEnabled(True)
+            self.btn.setShortcut("space")
+            for i in range(0, len(self.btnC)):
+                self.btnC[i].resize(100, 50)
+                self.btnC[i].setShortcut("%s" % (i+1))
+            for i in range(0, len(self.btnB)):
+                self.btnB[i].resize(100, 50)
+                self.btnB[i].setEnabled(True)
+                self.btnB[i].setShortcut("%s" % (i+1))
 
     def play(self):
         if self.play_test == 1:
