@@ -23,11 +23,12 @@
 # MAke att dina money blir removed före du ha change cards att du inte kan cheat de system save game mid hand
 # Add possibility to delete a load save
 # When a item has BG color black set text color WHITE
+# https://stackoverflow.com/questions/9764298/is-it-possible-to-sort-two-listswhich-reference-each-other-in-the-exact-same-w
 import sys
 import fnmatch
 import sqlite3 as lite
 from random import shuffle
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory, QFileDialog, QInputDialog
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory, QInputDialog
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 
 class Window(QMainWindow):
