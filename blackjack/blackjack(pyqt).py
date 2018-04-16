@@ -13,10 +13,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #PyQt5-BlackJack Version 1.1
-
-# WHY IS I GLOBAL ???
-# IT IS USED TO IDENTIFY IF YOU DO FIRST HIT OR SECOUND HIT
-# MAKE INDENT IN DUAL LIST WITH BOTH INDENT OF PLAYER AND DEALER
+# MAKE USE OF BTN SET TEXT
+# REMOVE ALLA MÄLLAN STEG
+# AFTER RESTART SOMETIME EXTRA MELLANSTÄG
 import sys
 from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory
 from PyQt5.QtGui import QIcon, QPixmap, QFont
@@ -76,7 +75,6 @@ class Window(QMainWindow):
         self.btnB=[]
         self.btn.append(QPushButton("Hit", self))
         self.btn.append(QPushButton("Stand", self))
-        self.btn.append(QPushButton("Restart?", self))
         self.btnB.append(QPushButton("Bet 0,20 €", self))
         self.btnB.append(QPushButton("Bet 0,50 €", self))
         self.btnB.append(QPushButton("Bet 1 €", self))
@@ -89,6 +87,8 @@ class Window(QMainWindow):
         self.drawn = 0
         self.picIndex = 0
         self.indent=[150, 150]
+        self.play_test = 1
+        self.oneOrTwoCards = 0
         # FIrst is player 2nd is dealer
         self.btnB[0].clicked.connect(lambda: self.bet(0.2, 0))
         self.btnB[0].resize(100, 50)
@@ -115,16 +115,17 @@ class Window(QMainWindow):
         self.btnB[3].setEnabled(True)
         self.btnB[3].setShortcut("4")
         
-        self.btn[0].clicked.connect(self.hitMe)
+        self.btn[0].clicked.connect(self.play)
         self.btn[0].resize(100, 50)
         self.btn[0].move(100,  100)
-        
-        self.btn[2].clicked.connect(self.restart)
-        self.btn[2].move(100, 100)
-        
+        self.btn[0].setShortcut("H")
+        # MAKE SINGLE BUTTON IN THIS AND ALOSE SE SET TEXT IN POKER
+        self.btn[0].setText("Hit")
        
         self.btn[1].clicked.connect(self.stand)
         self.btn[1].move(0,  100)
+        self.btn[1].resize(100, 50)
+        self.btn[1].setShortcut("S")
         self.money = QLabel(("Money %s €"%(str(self.var_money))), self)
         self.money.setStyleSheet(("background-color: white;"))
         
@@ -152,6 +153,13 @@ class Window(QMainWindow):
         self.win.setFont(font)
         
         self.show()
+    def play(self):
+        if self.play_test == 1:
+            self.hitMe()
+            #HITME
+        elif self.play_test == 2:
+            self.restart()
+            #RESTART
     def empty(self):
         global drawnCards, cardValue, win, charlie
         for i in range(0, len(self.pic)):
@@ -160,8 +168,7 @@ class Window(QMainWindow):
         win=0
         charlie=0
     def resize(self):
-        for i in range(0, len(self.btn)):
-            self.btn[i].resize(0, 0)
+        self.btn[1].setEnabled(False)
         for i in range(0, len(self.btnB)):
             self.btnB[i].setEnabled(False)
     def bet(self, n, index):
@@ -185,7 +192,7 @@ class Window(QMainWindow):
 #        self.resize()
 #        self.btn[0].resize(100, 50)
     def cardDraw(self, handLength, OneOrTwo, plyr, name, indentIndex, line):
-        global win, drawnCards, cardValue, I,charlie
+        global win, drawnCards, cardValue, charlie
         hand=[]
         # maby make range 0, n?
         for i in range(0, handLength):
@@ -217,7 +224,7 @@ class Window(QMainWindow):
             self.player.setText(card)
             self.player.setStyleSheet(("background-color: white;"))
         elif OneOrTwo==1:
-            if len(cardValue[plyr])>=5:
+            if len(cardValue[plyr])>=5 and sum(cardValue[plyr])<=21 and plyr == 1: # ADD KRAV NOT OVER 21 and only for player
                 card="%s got a %s wich is a five card Charlie"%(name, hand[0])
                 charlie=1
                 self.check()
@@ -227,14 +234,16 @@ class Window(QMainWindow):
                 if plyr!=0:
                     self.stand()
             elif sum(cardValue[plyr])>=22:
-                print(cardDeck[self.drawn-1])
-                print(hand[0])
+#                print(cardDeck[self.drawn-1])
+#                print(hand[0])
                 #DEBUG THIS
                 card="%s got a %s wich is %s and got busted"%(name, hand[0], sum(cardValue[plyr]))
                 self.resize()
                 if plyr==1:
                     self.check()
-                self.btn[2].resize(100, 50)
+                self.play_test = 2
+                self.btn[0].setText("Restart?")
+                self.btn[0].setShortcut("H")
             else:
                 card="%s got a %s wich is a total of %s"%(name, hand[0], sum(cardValue[plyr]))
             if plyr==0:
@@ -253,7 +262,7 @@ class Window(QMainWindow):
                         cardValue[plyr][i]=1
                         break
     def check(self):
-        global win, cardValue, drawnCards, I, charlie
+        global win, cardValue, drawnCards, charlie
         self.var_money=round(self.var_money, 2)
         if win == 1:
             self.var_money+=self.var_bet*1.5
@@ -276,14 +285,18 @@ class Window(QMainWindow):
         self.win.setStyleSheet(("background-color: white;"))
         shuffle(cardDeck)
 #        print(cardDeck)
-        drawnCards, cardValue, I, win, self.drawn=[[], []], [[], []], -1, 0, 0
+        drawnCards, cardValue, self.oneOrTwoCards, win, self.drawn=[[], []], [[], []], -1, 0, 0
         self.resize()
-        self.btn[2].resize(100, 50)
+        self.play_test = 2
+        self.btn[0].setText("Restart?")
+        self.btn[0].setShortcut("H")
     def restart(self):
         self.resize()
         for i in range(0, len(self.btnB)):
             self.btnB[i].setEnabled(True)
-        self.btn[0].resize(100, 50)
+        self.btn[0].setText("Hit")
+        self.btn[0].setShortcut("H")
+        self.play_test = 1
         self.win.setText("")
         self.dealer.setText("")
         self.player.setText("")
@@ -298,7 +311,9 @@ class Window(QMainWindow):
                 self.cardDraw(1, 1, 0, "Dealer",1 , 470)
             else:
                 self.resize()
-                self.btn[2].resize(100, 50)
+                self.play_test = 2
+                self.btn[0].setText("Restart?")
+                self.btn[0].setShortcut("H")
                 self.check()
                 break
     def style_set(self, n):
@@ -306,19 +321,20 @@ class Window(QMainWindow):
     def hitMe(self):
         for i in range(0, len(self.btnB)):
             self.btnB[i].setEnabled(False)
-        global I
-        if I<=-1:
-            I=0
-        if I==0:
-            self.btn[1].resize(100, 50)
+#        print(self.oneOrTwoCards)
+#        if self.oneOrTwoCards<=-1:
+#            self.oneOrTwoCards=0
+        if self.oneOrTwoCards<=0:
+            self.oneOrTwoCards=0
+        if self.oneOrTwoCards==0:
+            self.btn[1].setEnabled(True)
             self.cardDraw(2, 2, 1, "You",0 , 150)
             self.cardDraw(1, 1, 0, "Dealer",1 , 470)
-        elif I>0:
+        elif self.oneOrTwoCards>0:
             self.cardDraw(1, 1, 1, "You", 0, 150)
-        I+=1
+        self.oneOrTwoCards+=1
         self.var_money=round(self.var_money, 2)
         self.money.setText("Money %s €"%(str(self.var_money)))
-I=0
 drawnCards=[[], []]
 cardValue=[[], []]
 cardDeck=[]
@@ -329,11 +345,13 @@ for a in range(0, ans):
         for i in ("2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"):
             cardDeck.append("%s of %s"%(i, j))
 shuffle(cardDeck)
-print(cardDeck)
-#for i in range(0, 10):
+#print(cardDeck)
+#print(cardDeck)
+#for i in range(0, 200):
 #    cardDeck[i]="Ace of Spades"
 win = 0
 charlie=0
+# COMBINE THESE TWO list called win eller dict
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     Window()
