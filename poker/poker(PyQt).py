@@ -256,7 +256,7 @@ class Window(QMainWindow):
                 self.btnB[i].resize(100, 50)
                 self.btnB[i].setEnabled(True)
                 self.btnB[i].setShortcut("%s" % (i+1))
-
+        self.start.setEnabled(False)
     def play(self):
         if self.play_test == 1:
             self.deal()
