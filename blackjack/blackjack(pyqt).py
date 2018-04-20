@@ -289,7 +289,8 @@ class Window(QMainWindow):
         self.win.setStyleSheet(("background-color: white;"))
         shuffle(cardDeck)
 #        print(cardDeck)
-        drawnCards, cardValue, self.oneOrTwoCards, win, self.drawn=[[], []], [[], []], -1, 0, 0
+        drawnCards, cardValue, self.oneOrTwoCards, win, self.drawn=[[], []], [[], []], 0, 0, 0
+        print("HERE", self.oneOrTwoCards)
         self.resize()
         self.play_test = 2
         self.enableBet()
@@ -322,20 +323,23 @@ class Window(QMainWindow):
         QApplication.setStyle(QStyleFactory.create(n))
     def hitMe(self):
         # TRY INSTEAD TRY IF ONEORTWO EXIST IF EXIST IT RUN ELIF EXCEPTION IT CRATE VARIABLE AND RUN FIRST ONE AND ON RESTART IT DELETE VARIABLE
+        # CONTINUE TRYING MABY U GET FIX
         for i in range(0, len(self.btnB)):
             self.btnB[i].setEnabled(False)
         print(self.oneOrTwoCards)
 #        if self.oneOrTwoCards<=-1:
 #            self.oneOrTwoCards=0
-        if self.oneOrTwoCards<=0:
-            self.oneOrTwoCards=0
+#        if self.oneOrTwoCards<=0:
+#            self.oneOrTwoCards=0
         if self.oneOrTwoCards==0:
+            print("THIS DID RUN")
             self.btn[1].setEnabled(True)
             self.cardDraw(2, 2, 1, "You",0 , 150)
             self.cardDraw(1, 1, 0, "Dealer",1 , 470)
+            self.oneOrTwoCards+=1
         elif self.oneOrTwoCards>0:
             self.cardDraw(1, 1, 1, "You", 0, 150)
-        self.oneOrTwoCards+=1
+        # MABY THIS += has something to do iwth it moved it inside if 
         self.var_money=round(self.var_money, 2)
         self.money.setText("Money %s €"%(str(self.var_money)))
 drawnCards=[[], []]
