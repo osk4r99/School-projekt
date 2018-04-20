@@ -16,6 +16,8 @@
 # MAKE USE OF BTN SET TEXT
 # REMOVE ALLA MÄLLAN STEG
 # AFTER RESTART SOMETIME EXTRA MELLANSTÄG
+# Enable insurance button if dealer has 10 showing in the situation när man får ha en insurance and split button
+# FIGURE OUT WHY du must do if oneortwocard is less than 0 and if u set it 0 it start on 1
 import sys
 from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory
 from PyQt5.QtGui import QIcon, QPixmap, QFont
@@ -118,9 +120,7 @@ class Window(QMainWindow):
         self.btn[0].clicked.connect(self.play)
         self.btn[0].resize(100, 50)
         self.btn[0].move(100,  100)
-        self.btn[0].setShortcut("H")
-        # MAKE SINGLE BUTTON IN THIS AND ALOSE SE SET TEXT IN POKER
-        self.btn[0].setText("Hit")
+        self.btn[0].setShortcut("h")
        
         self.btn[1].clicked.connect(self.stand)
         self.btn[1].move(0,  100)
@@ -242,8 +242,7 @@ class Window(QMainWindow):
                 if plyr==1:
                     self.check()
                 self.play_test = 2
-                self.btn[0].setText("Restart?")
-                self.btn[0].setShortcut("H")
+                self.enableBet()
             else:
                 card="%s got a %s wich is a total of %s"%(name, hand[0], sum(cardValue[plyr]))
             if plyr==0:
@@ -265,20 +264,25 @@ class Window(QMainWindow):
         global win, cardValue, drawnCards, charlie
         self.var_money=round(self.var_money, 2)
         if win == 1:
+            print("OK BLACKJACK")
             self.var_money+=self.var_bet*1.5
             self.money.setText("Money %s €"%(str(self.var_money)))
             self.win.setText("You won")
         elif charlie == 1:
+            print("CHARILIE")
             self.var_money+=self.var_bet
             self.money.setText("Money %s €"%(str(self.var_money)))
             self.win.setText("You won")
         elif sum(cardValue[1])==sum(cardValue[0]):
+            print("TIE")
             self.win.setText("Tie")
         elif (sum(cardValue[1])>=22 or sum(cardValue[1])<sum(cardValue[0])) and not sum(cardValue[0])>=22:
+            print("LOOSE")
             self.var_money-=self.var_bet
             self.money.setText("Money %s €"%(str(self.var_money)))
             self.win.setText("Dealer won")
         elif (sum(cardValue[0])>=22 or sum(cardValue[1])>sum(cardValue[0])) and not sum(cardValue[1])>=22:
+            print("WIN")
             self.var_money+=self.var_bet
             self.money.setText("Money %s €"%(str(self.var_money)))
             self.win.setText("You won")
@@ -288,14 +292,12 @@ class Window(QMainWindow):
         drawnCards, cardValue, self.oneOrTwoCards, win, self.drawn=[[], []], [[], []], -1, 0, 0
         self.resize()
         self.play_test = 2
-        self.btn[0].setText("Restart?")
-        self.btn[0].setShortcut("H")
-    def restart(self):
-        self.resize()
+        self.enableBet()
+    def enableBet(self):
         for i in range(0, len(self.btnB)):
             self.btnB[i].setEnabled(True)
-        self.btn[0].setText("Hit")
-        self.btn[0].setShortcut("H")
+    def restart(self):
+        self.resize()
         self.play_test = 1
         self.win.setText("")
         self.dealer.setText("")
@@ -304,6 +306,7 @@ class Window(QMainWindow):
         self.player.setStyleSheet(("background-color: transparent;"))
         self.win.setStyleSheet(("background-color: transparent;"))
         self.empty()
+        self.hitMe()
     def stand(self):
         self.resize()
         while True:
@@ -312,16 +315,16 @@ class Window(QMainWindow):
             else:
                 self.resize()
                 self.play_test = 2
-                self.btn[0].setText("Restart?")
-                self.btn[0].setShortcut("H")
+                self.enableBet()
                 self.check()
                 break
     def style_set(self, n):
         QApplication.setStyle(QStyleFactory.create(n))
     def hitMe(self):
+        # TRY INSTEAD TRY IF ONEORTWO EXIST IF EXIST IT RUN ELIF EXCEPTION IT CRATE VARIABLE AND RUN FIRST ONE AND ON RESTART IT DELETE VARIABLE
         for i in range(0, len(self.btnB)):
             self.btnB[i].setEnabled(False)
-#        print(self.oneOrTwoCards)
+        print(self.oneOrTwoCards)
 #        if self.oneOrTwoCards<=-1:
 #            self.oneOrTwoCards=0
         if self.oneOrTwoCards<=0:
