@@ -285,9 +285,13 @@ class Window(QMainWindow):
             for i in range(0, 5):
                 if cards[x][0:2] in self.card[i][0:2]:
                     if self.card[i][0:2] not in ranks:
-                        pair[i]=(fnmatch.filter(self.card, '%s*'%(cards[x])))
+                        if cards[x] is not "Joker":
+                            pair[i]=(fnmatch.filter(self.card, '%s*'%(cards[x])))
+                            cardValues[i]=x+1
                         ranks[i]=self.card[i][0:2]
-                        cardValues[i]=x+1
+        print(pair)
+        print(cardValues)
+        print(ranks)
         for i in range(0, len(ranks)):
             if pair[i]!=0:
                 pair[i]=len(pair[i])
@@ -299,7 +303,9 @@ class Window(QMainWindow):
                     pair.pop(i)
                     ranks.pop(i)
                     cardValues.pop(i)
-
+        print(pair)
+        print(cardValues)
+        print(ranks)
         while len(pair)!=5:
             pair.append(False)
             ranks.append(False)
@@ -361,32 +367,43 @@ class Window(QMainWindow):
                             elif x == 3:
                                 suit[i]="Clubs"
         cardValues.sort()
+        print(pair)
         print(cardValues)
-        if cardValues[0]+3==cardValues[1]+2==cardValues[2]+1==cardValues[3]==13 and suits[4]==1:
-            print("ACE IS JOKER")
-        if ((cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1) or \
-            (cardValues[0]+3==cardValues[1]+2==cardValues[2]+1==cardValues[3]==13 and suits[4]==1) or \
-            (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==13 and suits[4]==1 and cardValues[0]==1) or \
-            (cardValues[1]+3==cardValues[2]+2==cardValues[3]==13 and suits[4]==1 and cardValues[0]==1) or \
-            (cardValues[1]+3==cardValues[2]+1==cardValues[3]==13 and suits[4]==1 and cardValues[0]==1) or \
-            (cardValues[1]+2==cardValues[2]+1==cardValues[3]==13 and suits[4]==1 and cardValues[0]==1) or \
-            # 2 JOKERS START HERE FIRST IS ACE AND KING IS JOKER TEST THIS AFTER LUNCH
-            (cardValues[0]+3==cardValues[1]+2==cardValues[2]+1==13 and suits[4]==2) or \
-            (cardValues[0]+3==cardValues[1]+2==cardValues[2]==13 and suits[4]==2) or \
-            (cardValues[0]+3==cardValues[1]+1==cardValues[2]==13 and suits[4]==2) or \
-            (cardValues[0]+2==cardValues[1]+1==cardValues[2]==13 and suits[4]==2) or \
-            (cardValues[1]+3==cardValues[2]+2==13 and suits[4]==2 and cardValues[0]==1) or \
-            (cardValues[1]+3==cardValues[2]+1==13 and suits[4]==2 and cardValues[0]==1) or \
-            (cardValues[1]+2==cardValues[2]+1==13 and suits[4]==2 and cardValues[0]==1) or \
-            (cardValues[1]+3==cardValues[2]==13 and suits[4]==2 and cardValues[0]==1) or \
-            (cardValues[1]+2==cardValues[2]==13 and suits[4]==2 and cardValues[0]==1) or \
-            (cardValues[2]+1==cardValues[4]==13 and suits[4]==2 and cardValues[0]==1)  \
+        print(ranks)
+#        if cardValues[0]+3==cardValues[1]+2==cardValues[2]+1==cardValues[3]==13 and suits[4]==1:
+#            print("ACE IS JOKER")
+        print(cardValues[2])
+        print(cardValues[1])
+        print(cardValues[0])
+        print(suits[4])
+        if cardValues[2]==cardValues[1]+2==cardValues[0]+3 and suits[4]==2:
+            print("OK")
+        # This should now work ment testa endå alla diffrent combinations
+        # FIND OUT WHY CARD VALUES HAR 2 false i start and not after sen måst du change alla rader med joker att det lägsta 0 högsta de högsta
+        # because it is sorted false is allways first men not to worry it is not a problem
+        if ((cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suits[4]==0) or \
+            (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and suits[4]==1) or \
+            (cardValues[2]+3==cardValues[3]+2==cardValues[4]+1==13 and suits[4]==1 and cardValues[1]==1) or \
+            (cardValues[2]+3==cardValues[3]+2==cardValues[4]==13 and suits[4]==1 and cardValues[1]==1) or \
+            (cardValues[2]+3==cardValues[3]+1==cardValues[4]==13 and suits[4]==1 and cardValues[1]==1) or \
+            (cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and suits[4]==1 and cardValues[1]==1) or \
+            (cardValues[2]+3==cardValues[3]+2==cardValues[4]+1==13 and suits[4]==2) or \
+            (cardValues[2]+3==cardValues[3]+2==cardValues[4]==13 and suits[4]==2) or \
+            (cardValues[2]+3==cardValues[3]+1==cardValues[4]==13 and suits[4]==2) or \
+            (cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and suits[4]==2) or \
+            (cardValues[3]+3==cardValues[4]+2==13 and suits[4]==2 and cardValues[2]==1) or \
+            (cardValues[3]+3==cardValues[4]+1==13 and suits[4]==2 and cardValues[2]==1) or \
+            (cardValues[3]+2==cardValues[4]+1==13 and suits[4]==2 and cardValues[2]==1) or \
+            (cardValues[3]+3==cardValues[4]==13 and suits[4]==2 and cardValues[2]==1) or \
+            (cardValues[3]+2==cardValues[4]==13 and suits[4]==2 and cardValues[2]==1) or \
+            (cardValues[3]+1==cardValues[4]==13 and suits[4]==2 and cardValues[2]==1)  \
             )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight royal flush in "+str(suit[0])
             self.var_money+=self.var_bet*976
             self.tWon+=self.var_bet*976
             win="And won %s €"%(round(self.var_bet*976, 2))
         elif (5 in pair) or (4 in pair and suits[4]==1) or (3 in pair and suits[4]==2):
+            # MABY HERE DO same som i pari 4 for i in range whatever tar mindre rader
             if ranks[0] == "Joker":
                 if ranks[1] == "Joker":
                     playerChoice="You got five of "+str(ranks[2]+"'s")
@@ -398,22 +415,44 @@ class Window(QMainWindow):
             self.tWon+=self.var_bet*976
             win="And won %s €"%(round(self.var_bet*976, 2))
         # IMPLEMENT SAME THING FROM STRAIGHT ROYAL FLUSH TO HERE
-        elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
+        elif ((cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and suits[4]==0) or \
+            (cardValues[4]+1==cardValues[3]+2==cardValues[2]+3==cardValues[1]+4 and suits[4]==1) or \
+            (cardValues[4]==cardValues[3]+2==cardValues[2]+3==cardValues[1]+4 and suits[4]==1) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+3==cardValues[1]+4 and suits[4]==1) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+4 and suits[4]==1) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3 and suits[4]==1) or \
+            (cardValues[4]+2==cardValues[3]+3==cardValues[2]+4 and suits[4]==2) or \
+            (cardValues[4]+1==cardValues[3]+3==cardValues[2]+4 and suits[4]==2) or \
+            (cardValues[4]+1==cardValues[3]+2==cardValues[2]+4 and suits[4]==2) or \
+            (cardValues[4]+1==cardValues[3]+2==cardValues[2]+3 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+3==cardValues[2]+4 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+2==cardValues[2]+4 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+2==cardValues[2]+3 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+4 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+3 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+2 and suits[4]==2)  \
+            )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
+            print(cardValues)
+            print(suit)
             playerChoice="You got a straight flush in "+str(suit[0])
             self.var_money+=self.var_bet*200
             self.tWon+=self.var_bet*200
             win="And won %s €"%(round(self.var_bet*200, 2))
-        elif 4 in pair:
-            for i in range(0, 2):
-                if pair[i]==4:
+        elif (4 in pair) or (3 in pair and suits[4]==1) or (2 in pair and suits[4]==2):
+            for i in range(0, 4):
+                print(pair)
+                if (pair[i]==4) or (pair[i]==3 and suits[4]==1) or (pair[i]==2 and suits[4]==2) :
                     playerChoice="You got four of a kind with "+str(ranks[i]+"'s")
                     self.var_money+=self.var_bet*50
                     self.tWon+=self.var_bet*50
                     win="And won %s €"%(round(self.var_bet*50, 2))
-        elif 3 in pair and 2 in pair:
+        elif (3 in pair and 2 in pair) or (2 in pair and 2 in pair and suits[4]==1):
             I=1
+            print(pair)
+            print(suits)
+            print("HERE")
             for i in range(0, 2):
-                if pair[i]==3 and pair[I]==2:
+                if (pair[i]==3 and pair[I]==2) or (pair[i]==2 and pair[I]==2 and suits[4]==1):
                     playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
                     self.var_money+=self.var_bet*25
                     self.tWon+=self.var_bet*25
@@ -424,7 +463,9 @@ class Window(QMainWindow):
             self.var_money+=self.var_bet*15
             self.tWon+=self.var_bet*15
             win="And won %s €"%(round(self.var_bet*15, 2))
-        elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 or (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1):
+        # THIS ONE WILL HAVE MANY DIFFRENT POSSIBILITES 5 olika med ace and 5 olika utan single jack and med 2 jack 10 på båda?
+        elif (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 )or \
+            (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1):
             playerChoice="You got a straight"
             self.var_money+=self.var_bet*10
             self.tWon+=self.var_bet*10
@@ -524,7 +565,7 @@ class Window(QMainWindow):
                 self.drawn+=1
             I+=1
         I = 1
-        self.card = ["Ace of Hearts", "King of Hearts", "Queen of Hearts", "Jack of Hearts", "10 of Hearts"]
+        self.card = [ "Ace of Hearts", "Joker", "Joker", "Jack of Hearts","10 of Hearts"]
         for i in range(0, 5):
             self.pic.append(QLabel(self))
             self.pic[self.p1].setPixmap(QPixmap("img/%s.svg"%(self.card[i])))
