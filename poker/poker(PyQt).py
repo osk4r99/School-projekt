@@ -280,13 +280,12 @@ class Window(QMainWindow):
         self.empty()
         self.resize()
         self.card = self.cardPic(ans, 150)
-        cards = ("Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King")
+        cards = ("Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Joker")
         for x in range(0, len(cards)):
             for i in range(0, 5):
                 if cards[x][0:2] in self.card[i][0:2]:
                     if self.card[i][0:2] not in ranks:
                         pair[i]=(fnmatch.filter(self.card, '%s*'%(cards[x])))
-                        ranks[i]=self.card[i][0:2]
                         ranks[i]=self.card[i][0:2]
                         cardValues[i]=x+1
         for i in range(0, len(ranks)):
@@ -315,6 +314,11 @@ class Window(QMainWindow):
                 suit[i]="Clubs"
             elif "Diamonds" in self.card[i]:
                 suit[i]="Diamonds"
+            elif "Joker" in self.card[i]:
+                suit[i]="Joker"
+#        suit = ["Clubs", "Clubs", "Clubs", "Clubs", "Clubs"]
+#        if suit[0]==suit[1]==suit[2]==suit[3] and suit[4]=="Joker":
+#            pass
         #Use this for printing how many pairs you have of each card
     #    for i in range(0, 5):
     #        if pair[i]!=False:
@@ -328,17 +332,72 @@ class Window(QMainWindow):
                 ranks[i]="Queen"
             elif "Ki" in str(ranks[i]):
                 ranks[i]="King"
+            elif "Jo" in str(ranks[i]):
+                ranks[i]="Joker"
+        suits=[0, 0, 0, 0, 0]
+        if "Joker" in suit:
+            # index 0 is hearts 1 is spades 2 is diamond 3 is clubs 4 is for jokers
+            for i in suit:
+                if i == "Spades":
+                    suits[1]+=1
+                elif i == "Clubs":
+                    suits[3]+=1
+                elif i == "Diamonds":
+                    suits[2]+=1
+                elif i == "Hearts":
+                    suits[0]+=1
+                elif i == "Joker":
+                    suits[4]+=1
+            for x in range(0, 4):
+                for i in range(0, 5):
+                    if suits[x] >= 3:
+                        if suit[i] == "Joker":
+                            if x == 0:
+                                suit[i]="Hearts"
+                            elif x == 1:
+                                suit[i]="Spades"
+                            elif x == 2:
+                                suit[i]="Diamonds"
+                            elif x == 3:
+                                suit[i]="Clubs"
         cardValues.sort()
-        if cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
+        print(cardValues)
+        if cardValues[0]+3==cardValues[1]+2==cardValues[2]+1==cardValues[3]==13 and suits[4]==1:
+            print("ACE IS JOKER")
+        if ((cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1) or \
+            (cardValues[0]+3==cardValues[1]+2==cardValues[2]+1==cardValues[3]==13 and suits[4]==1) or \
+            (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==13 and suits[4]==1 and cardValues[0]==1) or \
+            (cardValues[1]+3==cardValues[2]+2==cardValues[3]==13 and suits[4]==1 and cardValues[0]==1) or \
+            (cardValues[1]+3==cardValues[2]+1==cardValues[3]==13 and suits[4]==1 and cardValues[0]==1) or \
+            (cardValues[1]+2==cardValues[2]+1==cardValues[3]==13 and suits[4]==1 and cardValues[0]==1) or \
+            # 2 JOKERS START HERE FIRST IS ACE AND KING IS JOKER TEST THIS AFTER LUNCH
+            (cardValues[0]+3==cardValues[1]+2==cardValues[2]+1==13 and suits[4]==2) or \
+            (cardValues[0]+3==cardValues[1]+2==cardValues[2]==13 and suits[4]==2) or \
+            (cardValues[0]+3==cardValues[1]+1==cardValues[2]==13 and suits[4]==2) or \
+            (cardValues[0]+2==cardValues[1]+1==cardValues[2]==13 and suits[4]==2) or \
+            (cardValues[1]+3==cardValues[2]+2==13 and suits[4]==2 and cardValues[0]==1) or \
+            (cardValues[1]+3==cardValues[2]+1==13 and suits[4]==2 and cardValues[0]==1) or \
+            (cardValues[1]+2==cardValues[2]+1==13 and suits[4]==2 and cardValues[0]==1) or \
+            (cardValues[1]+3==cardValues[2]==13 and suits[4]==2 and cardValues[0]==1) or \
+            (cardValues[1]+2==cardValues[2]==13 and suits[4]==2 and cardValues[0]==1) or \
+            (cardValues[2]+1==cardValues[4]==13 and suits[4]==2 and cardValues[0]==1)  \
+            )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight royal flush in "+str(suit[0])
             self.var_money+=self.var_bet*976
             self.tWon+=self.var_bet*976
             win="And won %s €"%(round(self.var_bet*976, 2))
-        elif 5 in pair:
-            playerChoice="You got five of "+str(ranks[0]+"'s")
+        elif (5 in pair) or (4 in pair and suits[4]==1) or (3 in pair and suits[4]==2):
+            if ranks[0] == "Joker":
+                if ranks[1] == "Joker":
+                    playerChoice="You got five of "+str(ranks[2]+"'s")
+                else:
+                    playerChoice="You got five of "+str(ranks[1]+"'s")
+            else:
+                playerChoice="You got five of "+str(ranks[0]+"'s")
             self.var_money+=self.var_bet*976
             self.tWon+=self.var_bet*976
             win="And won %s €"%(round(self.var_bet*976, 2))
+        # IMPLEMENT SAME THING FROM STRAIGHT ROYAL FLUSH TO HERE
         elif cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight flush in "+str(suit[0])
             self.var_money+=self.var_bet*200
@@ -398,33 +457,27 @@ class Window(QMainWindow):
 #                        win="And lost nothing"
 #                    else:
 #uncomment this and indent money- bet and win= for no loss with jacks or beter
-                    self.var_money-=self.var_bet
                     self.tLos+=self.var_bet
                     win="And lost %s €"%(round(self.var_bet, 2))
         elif "Ace" in ranks:
             playerChoice="You got an Ace high"
-            self.var_money-=self.var_bet
             self.tLos+=self.var_bet
             win="And lost %s €"%(round(self.var_bet, 2))
         elif "King" in ranks:
             playerChoice="You got a King high"
-            self.var_money-=self.var_bet
             self.tLos+=self.var_bet
             win="And lost %s €"%(round(self.var_bet, 2))
             
         elif "Queen" in ranks:
             playerChoice="You got a Queen high"
-            self.var_money-=self.var_bet
             self.tLos+=self.var_bet
             win="And lost %s €"%(round(self.var_bet, 2))
         elif "Jack" in ranks:
             playerChoice="You got a Jack high"
-            self.var_money-=self.var_bet
             self.tLos+=self.var_bet
             win="And lost %s €"%(round(self.var_bet, 2))
         else:
             playerChoice=str("You got a ")+str(max(cardValues))+str(" high")
-            self.var_money-=self.var_bet
             self.tLos+=self.var_bet
             win="And lost %s €"%(round(self.var_bet, 2))
         print(ranks)
@@ -458,6 +511,9 @@ class Window(QMainWindow):
             self.btnC[i].setEnabled(True) 
         if self.var_bet>self.var_money:
             self.var_bet=self.var_money
+        self.var_money -= self.var_bet
+        self.var_money=round(self.var_money, 2)
+        self.money.setText("Money %s €"%(str(self.var_money)))
         self.card = self.cardPic("12345", 150)
 
     def cardPic(self, ans, line):
@@ -468,6 +524,7 @@ class Window(QMainWindow):
                 self.drawn+=1
             I+=1
         I = 1
+        self.card = ["Ace of Hearts", "King of Hearts", "Queen of Hearts", "Jack of Hearts", "10 of Hearts"]
         for i in range(0, 5):
             self.pic.append(QLabel(self))
             self.pic[self.p1].setPixmap(QPixmap("img/%s.svg"%(self.card[i])))
@@ -574,6 +631,8 @@ for a in range(0, ans):
     for j in ("Hearts", "Diamonds", "Spades", "Clubs"):
         for i in ("Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"):
             cardDeck.append("%s of %s"%(i, j))
+cardDeck.append("Joker")
+cardDeck.append("Joker")
 shuffle(cardDeck)
 if __name__ == '__main__':
     app = QApplication(sys.argv)
