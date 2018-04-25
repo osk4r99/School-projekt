@@ -15,15 +15,16 @@
 #PyQt5-Poker version 1.4
 
 #Connect till database username password money
-#make locked buttons more grayed out typ gray background
 #SQLITE CONNECT efter man enter uname password and click button (maby only uname)
 # sen också create user password
 # sen save sku UPDATE rowen
 # story in game pay bank debt 1 k easy 5 k med 10 k hard in 3 H maby more if needed
-# MAke att dina money blir removed före du ha change cards att du inte kan cheat de system save game mid hand
 # Add possibility to delete a load save
-# When a item has BG color black set text color WHITE
 # https://stackoverflow.com/questions/9764298/is-it-possible-to-sort-two-listswhich-reference-each-other-in-the-exact-same-w
+
+# NOW JOKER WORKS DEN KAN INTE ENNU PIC RIGHT CARD NAME
+#
+# MAKE VINSTERNA ALLA LITE SÄMMRE OCH ADD TUPPLAUS MED EN VETTIG GRÄNS FÖR HUR MYCKET MAN MAX KAN FÅ
 import sys
 import fnmatch
 import sqlite3 as lite
@@ -367,16 +368,18 @@ class Window(QMainWindow):
                             elif x == 3:
                                 suit[i]="Clubs"
         cardValues.sort()
-        print(pair)
-        print(cardValues)
-        print(ranks)
+#        print(pair)
+#        print(cardValues)
+#        print(ranks)
 #        if cardValues[0]+3==cardValues[1]+2==cardValues[2]+1==cardValues[3]==13 and suits[4]==1:
 #            print("ACE IS JOKER")
-        print(cardValues[2])
-        print(cardValues[1])
-        print(cardValues[0])
-        print(suits[4])
-        if cardValues[2]==cardValues[1]+2==cardValues[0]+3 and suits[4]==2:
+#        print(cardValues[2])
+#        print(cardValues[1])
+#        print(cardValues[0])
+#        print(suits[4])
+# JOKER SHOULD NOW WORK IN EVERY SCNEARIO BUT TEST SO THAT IT PRINTS RIGHT NAME FOR CARDS
+        print("\n\n", pair, suits[4])
+        if 2 in pair and suits[4]==1:
             print("OK")
         # This should now work ment testa endå alla diffrent combinations
         # FIND OUT WHY CARD VALUES HAR 2 false i start and not after sen måst du change alla rader med joker att det lägsta 0 högsta de högsta
@@ -440,43 +443,76 @@ class Window(QMainWindow):
             win="And won %s €"%(round(self.var_bet*200, 2))
         elif (4 in pair) or (3 in pair and suits[4]==1) or (2 in pair and suits[4]==2):
             for i in range(0, 4):
-                print(pair)
                 if (pair[i]==4) or (pair[i]==3 and suits[4]==1) or (pair[i]==2 and suits[4]==2) :
                     playerChoice="You got four of a kind with "+str(ranks[i]+"'s")
                     self.var_money+=self.var_bet*50
                     self.tWon+=self.var_bet*50
                     win="And won %s €"%(round(self.var_bet*50, 2))
-        elif (3 in pair and 2 in pair) or (2 in pair and 2 in pair and suits[4]==1):
+                    break
+        elif (3 in pair and 2 in pair) or (pair.count(2)==2 and suits[4]==1):
             I=1
             print(pair)
             print(suits)
             print("HERE")
-            for i in range(0, 2):
+            for i in range(0, 4):
                 if (pair[i]==3 and pair[I]==2) or (pair[i]==2 and pair[I]==2 and suits[4]==1):
                     playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
                     self.var_money+=self.var_bet*25
                     self.tWon+=self.var_bet*25
                     win="And won %s €"%(round(self.var_bet*25, 2))
+                    break
                 I-=1
         elif suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a flush in "+str(suit[0])
             self.var_money+=self.var_bet*15
             self.tWon+=self.var_bet*15
             win="And won %s €"%(round(self.var_bet*15, 2))
-        # THIS ONE WILL HAVE MANY DIFFRENT POSSIBILITES 5 olika med ace and 5 olika utan single jack and med 2 jack 10 på båda?
+        # This one should work thinking logically men you newer know
         elif (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 )or \
-            (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1):
+            (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3 and suits[4]==1)or \
+            (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and suits[4]==1) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+4 and suits[4]==1)or \
+            (cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[1]==1 and suits[4]==1) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+3==cardValues[1]+4 and suits[4]==1)or \
+            (cardValues[2]+3==cardValues[3]+1==cardValues[4]==13 and cardValues[1]==1 and suits[4]==1) or \
+            (cardValues[4]==cardValues[3]+2==cardValues[2]+3==cardValues[1]+4 and suits[4]==1)or \
+            (cardValues[2]+3==cardValues[3]+2==cardValues[4]==13 and cardValues[1]==1 and suits[4]==1) or \
+            (cardValues[4]+1==cardValues[3]+2==cardValues[2]+3==cardValues[1]+4 and suits[4]==1)or \
+            (cardValues[2]+3==cardValues[3]+2==cardValues[4]+1==13 and cardValues[1]==1 and suits[4]==1) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+2 and suits[4]==2)or \
+            (cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+3 and suits[4]==2)or \
+            (cardValues[2]+3==cardValues[3]+1==cardValues[4]==13 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+2==cardValues[2]+3 and suits[4]==2)or \
+            (cardValues[2]+3==cardValues[3]+2==cardValues[4]==13 and suits[4]==2) or \
+            (cardValues[4]+1==cardValues[3]+2==cardValues[2]+3 and suits[4]==2)or \
+            (cardValues[2]+3==cardValues[3]+2==cardValues[4]+1==13 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+1==cardValues[2]+4 and suits[4]==2)or \
+            (cardValues[3]+1==cardValues[4]==13 and cardValues[2]==1 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+2==cardValues[2]+4 and suits[4]==2)or \
+            (cardValues[3]+2==cardValues[4]==13 and cardValues[2]==1 and suits[4]==2) or \
+            (cardValues[4]+1==cardValues[3]+2==cardValues[2]+4 and suits[4]==2)or \
+            (cardValues[3]+2==cardValues[4]+1==13 and cardValues[2]==1 and suits[4]==2) or \
+            (cardValues[4]==cardValues[3]+3==cardValues[2]+4 and suits[4]==2)or \
+            (cardValues[3]+3==cardValues[4]==13 and cardValues[2]==1 and suits[4]==2) or \
+            (cardValues[4]+1==cardValues[3]+3==cardValues[2]+4 and suits[4]==2)or \
+            (cardValues[3]+3==cardValues[4]+1==13 and cardValues[2]==1 and suits[4]==2) or \
+            (cardValues[4]+2==cardValues[3]+3==cardValues[2]+4 and suits[4]==2)or \
+            (cardValues[3]+3==cardValues[4]+2==13 and cardValues[2]==1 and suits[4]==2):
             playerChoice="You got a straight"
             self.var_money+=self.var_bet*10
             self.tWon+=self.var_bet*10
             win="And won %s €"%(round(self.var_bet*10, 2))
-        elif 3 in pair:
-            for i in range(0, 3):
-                if pair[i]==3:
+        elif (3 in pair) or (2 in pair and suits[4]==1) or (1 in pair and suits[4]==2):
+            print("IT WORKED HERE")
+            for i in range(0, 5):
+                 if (pair[i]==3) or (pair[i]==2 and suits[4]==1) or (pair[i]==1 and suits[4]==2) :
                     playerChoice="You got a tripple of "+str(ranks[i]+"'s")
                     self.var_money+=self.var_bet*4
                     self.tWon+=self.var_bet*4
                     win="And won %s €"%(round(self.var_bet*4, 2))
+                    break
                     
         elif pair.count(2)==2:
             II,I=0,1
@@ -486,13 +522,15 @@ class Window(QMainWindow):
                     self.var_money+=self.var_bet*2
                     self.tWon+=self.var_bet*2
                     win="And won %s €"%(round(self.var_bet*2, 2))
+                    break
                 if I==1:
                     I+=1
                 elif I==2:
                     II+=1
-        elif 2 in pair:
+        elif (2 in pair) or (1 in pair and suits[4]==1):
             for i in range(0, 5):
-                if pair[i]==2:
+                # add same thing here som i high card test
+                if (pair[i]==2) or (pair[i]==1 and suits[4]==1):
                     playerChoice="You got a pair of "+str(ranks[i]+"'s")
 #                    if ranks[i][:1] in ("Q", "J", "K", "A"):
 #                        win="And lost nothing"
@@ -500,6 +538,7 @@ class Window(QMainWindow):
 #uncomment this and indent money- bet and win= for no loss with jacks or beter
                     self.tLos+=self.var_bet
                     win="And lost %s €"%(round(self.var_bet, 2))
+                    break
         elif "Ace" in ranks:
             playerChoice="You got an Ace high"
             self.tLos+=self.var_bet
@@ -565,7 +604,7 @@ class Window(QMainWindow):
                 self.drawn+=1
             I+=1
         I = 1
-        self.card = [ "Ace of Hearts", "Joker", "Joker", "Jack of Hearts","10 of Hearts"]
+#        self.card =  [ "7 of Clubs", "7 of Hearts", "Joker", "Jack of Spades","10 of Hearts"]
         for i in range(0, 5):
             self.pic.append(QLabel(self))
             self.pic[self.p1].setPixmap(QPixmap("img/%s.svg"%(self.card[i])))
