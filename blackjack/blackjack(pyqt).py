@@ -18,10 +18,13 @@
 # AFTER RESTART SOMETIME EXTRA MELLANSTÄG
 # Enable insurance button if dealer has 10 showing in the situation när man får ha en insurance and split button
 # FIGURE OUT WHY du must do if oneortwocard is less than 0 and if u set it 0 it start on 1
+# OneorTwoCards dont work when u get blackjack för den hoppar över alla tests maby
 import sys
 from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 from random import shuffle
+from PyQt5.QtTest import QTest
+#from time import sleep
 
 class Window(QMainWindow):
     def __init__(self):
@@ -289,7 +292,7 @@ class Window(QMainWindow):
         self.win.setStyleSheet(("background-color: white;"))
         shuffle(cardDeck)
 #        print(cardDeck)
-        drawnCards, cardValue, self.oneOrTwoCards, win, self.drawn=[[], []], [[], []], 0, 0, 0
+        drawnCards, cardValue, self.oneOrTwoCards, win, self.drawn=[[], []], [[], []], -1, 0, 0
         print("HERE", self.oneOrTwoCards)
         self.resize()
         self.play_test = 2
@@ -309,15 +312,21 @@ class Window(QMainWindow):
         self.empty()
         self.hitMe()
     def stand(self):
+        self.btn[0].setEnabled(False)
         self.resize()
+        speed = 100
         while True:
             if sum(cardValue[0])<=16 and sum(cardValue[1])!=0 and sum(cardValue[1])<=22:
+                print(i)
+                QTest.qWait(speed)
                 self.cardDraw(1, 1, 0, "Dealer",1 , 470)
+                speed+=200
             else:
                 self.resize()
                 self.play_test = 2
                 self.enableBet()
                 self.check()
+                self.btn[0].setEnabled(True)
                 break
     def style_set(self, n):
         QApplication.setStyle(QStyleFactory.create(n))
@@ -329,8 +338,9 @@ class Window(QMainWindow):
         print(self.oneOrTwoCards)
 #        if self.oneOrTwoCards<=-1:
 #            self.oneOrTwoCards=0
-#        if self.oneOrTwoCards<=0:
-#            self.oneOrTwoCards=0
+        if self.oneOrTwoCards<0:
+            print("This doesnt run when it is blackjack?")
+            self.oneOrTwoCards=0
         if self.oneOrTwoCards==0:
             print("THIS DID RUN")
             self.btn[1].setEnabled(True)
@@ -351,6 +361,7 @@ for a in range(0, ans):
     for j in ("Hearts", "Diamonds", "Spades", "Clubs"):
         for i in ("2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"):
             cardDeck.append("%s of %s"%(i, j))
+#            cardDeck.append("Ace of Spades")
 shuffle(cardDeck)
 #print(cardDeck)
 #print(cardDeck)
