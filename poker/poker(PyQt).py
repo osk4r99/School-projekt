@@ -721,12 +721,20 @@ class Window(QMainWindow):
     def close_application(self):
         sys.exit()
     def closeEvent(self, event):
+        # HERE YOU MAKE YES SAVE AND EXIT NO EXIT OCH CANCEL STAY IN GAME OCH IN MESSAGE BOX U PUT ALL STATISTIC HOW LONG YOU HAVE PLAYED ETC
         msgBox = QMessageBox()
         msgBox.setText('What to do?')
-        msgBox.addButton(QPushButton('Accept'), QMessageBox.YesRole)
-        msgBox.addButton(QPushButton('Reject'), QMessageBox.NoRole)
-        msgBox.addButton(QPushButton('Cancel'), QMessageBox.RejectRole)
-        ret = msgBox.exec_()
+        yes_button = msgBox.addButton("Yes!", QMessageBox.YesRole)        
+        no_button = msgBox.addButton("No!", QMessageBox.YesRole)        
+        cancel_button = msgBox.addButton("Cancel!", QMessageBox.YesRole)
+        msgBox.exec_()
+        if msgBox.clickedButton() == yes_button:
+            print("Response to warning: Yes")    
+        elif msgBox.clickedButton() == no_button:
+            print("Response to warning: No")    
+        elif msgBox.clickedButton() == cancel_button:
+            print("Response to warning: Cancel")   
+            event.ignore()
         # MAKE SO WHEN YOU EXIT VIA MENU ELLER HERE SÅ OPEN EN FINAL POPUP MED STATISTICS OCH EN SAVE BUTTON IF IT WORKS
 #        logger.info("stopping spin")
 #        self.stylusProximityControlOff()
