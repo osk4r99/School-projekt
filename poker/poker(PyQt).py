@@ -25,13 +25,16 @@
 # NOW JOKER WORKS DEN KAN INTE ENNU PIC RIGHT CARD NAME
 #
 # MAKE VINSTERNA ALLA LITE SÄMMRE OCH ADD TUPPLAUS MED EN VETTIG GRÄNS FÖR HUR MYCKET MAN MAX KAN FÅ
+
+# Nu borde det fungera med jocker perfectly enda ner till triss där den ibland kan välja fel kort som par om du har 2 jokers same for par med 1 joker
 import sys
 import fnmatch
 import sqlite3 as lite
 from random import shuffle
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory, QInputDialog
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory, QInputDialog, QMessageBox
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 
+        
 class Window(QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
@@ -290,9 +293,6 @@ class Window(QMainWindow):
                             pair[i]=(fnmatch.filter(self.card, '%s*'%(cards[x])))
                             cardValues[i]=x+1
                         ranks[i]=self.card[i][0:2]
-        print(pair)
-        print(cardValues)
-        print(ranks)
         for i in range(0, len(ranks)):
             if pair[i]!=0:
                 pair[i]=len(pair[i])
@@ -304,9 +304,6 @@ class Window(QMainWindow):
                     pair.pop(i)
                     ranks.pop(i)
                     cardValues.pop(i)
-        print(pair)
-        print(cardValues)
-        print(ranks)
         while len(pair)!=5:
             pair.append(False)
             ranks.append(False)
@@ -368,9 +365,6 @@ class Window(QMainWindow):
                             elif x == 3:
                                 suit[i]="Clubs"
         cardValues.sort()
-#        print(pair)
-#        print(cardValues)
-#        print(ranks)
 #        if cardValues[0]+3==cardValues[1]+2==cardValues[2]+1==cardValues[3]==13 and suits[4]==1:
 #            print("ACE IS JOKER")
 #        print(cardValues[2])
@@ -378,9 +372,6 @@ class Window(QMainWindow):
 #        print(cardValues[0])
 #        print(suits[4])
 # JOKER SHOULD NOW WORK IN EVERY SCNEARIO BUT TEST SO THAT IT PRINTS RIGHT NAME FOR CARDS
-        print("\n\n", pair, suits[4])
-        if 2 in pair and suits[4]==1:
-            print("OK")
         # This should now work ment testa endå alla diffrent combinations
         # FIND OUT WHY CARD VALUES HAR 2 false i start and not after sen måst du change alla rader med joker att det lägsta 0 högsta de högsta
         # because it is sorted false is allways first men not to worry it is not a problem
@@ -435,8 +426,6 @@ class Window(QMainWindow):
             (cardValues[4]==cardValues[3]+1==cardValues[2]+3 and suits[4]==2) or \
             (cardValues[4]==cardValues[3]+1==cardValues[2]+2 and suits[4]==2)  \
             )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
-            print(cardValues)
-            print(suit)
             playerChoice="You got a straight flush in "+str(suit[0])
             self.var_money+=self.var_bet*200
             self.tWon+=self.var_bet*200
@@ -451,12 +440,33 @@ class Window(QMainWindow):
                     break
         elif (3 in pair and 2 in pair) or (pair.count(2)==2 and suits[4]==1):
             I=1
-            print(pair)
-            print(suits)
-            print("HERE")
             for i in range(0, 4):
                 if (pair[i]==3 and pair[I]==2) or (pair[i]==2 and pair[I]==2 and suits[4]==1):
-                    playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
+                    if suits[4] == 1:
+                        bigger = max(cardValues)
+                        smaller = 14
+                        for i in range(0, 5):
+                            if cardValues[i]!=False and cardValues[i]<=smaller:
+                                smaller = cardValues[i]
+                        if smaller==1:
+                            bigger, smaller = smaller, bigger
+                        if bigger == 1:
+                            bigger="Ace"
+                        elif bigger == 13:
+                            bigger="King"
+                        elif bigger == 12:
+                            bigger="Queen"
+                        elif bigger == 11:
+                            bigger = "Jack"
+                        if smaller == 13:
+                            smaller="King"
+                        elif smaller == 12:
+                            smaller="Queen"
+                        elif smaller == 11:
+                            smaller = "Jack"
+                        playerChoice="You got a full house with three "+str(bigger)+"'s and two "+str(smaller)+"'s"  
+                    else:
+                        playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
                     self.var_money+=self.var_bet*25
                     self.tWon+=self.var_bet*25
                     win="And won %s €"%(round(self.var_bet*25, 2))
@@ -505,7 +515,6 @@ class Window(QMainWindow):
             self.tWon+=self.var_bet*10
             win="And won %s €"%(round(self.var_bet*10, 2))
         elif (3 in pair) or (2 in pair and suits[4]==1) or (1 in pair and suits[4]==2):
-            print("IT WORKED HERE")
             for i in range(0, 5):
                  if (pair[i]==3) or (pair[i]==2 and suits[4]==1) or (pair[i]==1 and suits[4]==2) :
                     playerChoice="You got a tripple of "+str(ranks[i]+"'s")
@@ -539,28 +548,36 @@ class Window(QMainWindow):
                     self.tLos+=self.var_bet
                     win="And lost %s €"%(round(self.var_bet, 2))
                     break
-        elif "Ace" in ranks:
-            playerChoice="You got an Ace high"
-            self.tLos+=self.var_bet
-            win="And lost %s €"%(round(self.var_bet, 2))
-        elif "King" in ranks:
-            playerChoice="You got a King high"
-            self.tLos+=self.var_bet
-            win="And lost %s €"%(round(self.var_bet, 2))
-            
-        elif "Queen" in ranks:
-            playerChoice="You got a Queen high"
-            self.tLos+=self.var_bet
-            win="And lost %s €"%(round(self.var_bet, 2))
-        elif "Jack" in ranks:
-            playerChoice="You got a Jack high"
-            self.tLos+=self.var_bet
-            win="And lost %s €"%(round(self.var_bet, 2))
+#        elif "Ace" in ranks:
+#            playerChoice="You got an Ace high"
+#            self.tLos+=self.var_bet
+#            win="And lost %s €"%(round(self.var_bet, 2))
+#        elif "King" in ranks:
+#            playerChoice="You got a King high"
+#            self.tLos+=self.var_bet
+#            win="And lost %s €"%(round(self.var_bet, 2))
+#            
+#        elif "Queen" in ranks:
+#            playerChoice="You got a Queen high"
+#            self.tLos+=self.var_bet
+#            win="And lost %s €"%(round(self.var_bet, 2))
+#        elif "Jack" in ranks:
+#            playerChoice="You got a Jack high"
+#            self.tLos+=self.var_bet
+#            win="And lost %s €"%(round(self.var_bet, 2))
         else:
-            playerChoice=str("You got a ")+str(max(cardValues))+str(" high")
+            if "Ace" in ranks:
+                playerChoice=str("You got a Ace high")
+            elif "King" in ranks:
+                playerChoice=str("You got a King high")
+            elif "Queen" in ranks:
+                playerChoice=str("You got a Queen high")
+            elif "Jack" in ranks:
+                playerChoice=str("You got a Jack high")
+            else:
+                playerChoice=str("You got a ")+str(max(cardValues))+str(" high")
             self.tLos+=self.var_bet
             win="And lost %s €"%(round(self.var_bet, 2))
-        print(ranks)
         self.player.setText(playerChoice)
         self.player.setStyleSheet(("background-color: white;"))
         self.dealer.setText(win)
@@ -604,7 +621,7 @@ class Window(QMainWindow):
                 self.drawn+=1
             I+=1
         I = 1
-#        self.card =  [ "7 of Clubs", "7 of Hearts", "Joker", "Jack of Spades","10 of Hearts"]
+#        self.card =  [ "2 of Clubs", "5 of Spades", "6 of Hearts", "3 of Spades","10 of Hearts"]
         for i in range(0, 5):
             self.pic.append(QLabel(self))
             self.pic[self.p1].setPixmap(QPixmap("img/%s.svg"%(self.card[i])))
@@ -703,6 +720,17 @@ class Window(QMainWindow):
 #            pass
     def close_application(self):
         sys.exit()
+    def closeEvent(self, event):
+        msgBox = QMessageBox()
+        msgBox.setText('What to do?')
+        msgBox.addButton(QPushButton('Accept'), QMessageBox.YesRole)
+        msgBox.addButton(QPushButton('Reject'), QMessageBox.NoRole)
+        msgBox.addButton(QPushButton('Cancel'), QMessageBox.RejectRole)
+        ret = msgBox.exec_()
+        # MAKE SO WHEN YOU EXIT VIA MENU ELLER HERE SÅ OPEN EN FINAL POPUP MED STATISTICS OCH EN SAVE BUTTON IF IT WORKS
+#        logger.info("stopping spin")
+#        self.stylusProximityControlOff()
+#        self.deleteLater() 
 
 cardDeck = []
 ans=1
