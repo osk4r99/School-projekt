@@ -31,6 +31,9 @@
 # make save att det save also twon tlos set time elapsed in a variable och sen när man exit game tar 
 # det total from time elapsed and current session time and print it out stating this is your total time
 # 
+#State the license for the card backs side in the start of the file somewhere ask tore
+#
+#
 import sys
 import fnmatch
 import sqlite3 as lite
@@ -63,17 +66,17 @@ class Window(QMainWindow):
         
         self.saveFile = QAction("&Save File", self)
         self.saveFile.setShortcut("Ctrl+S")
-        self.saveFile.setStatusTip('Save File')
+        self.saveFile.setStatusTip("Save File")
         self.saveFile.triggered.connect(self.file_save)
         self.saveFile.setEnabled(False) 
         
         self.loadFile = QAction("&Load File", self)
         self.loadFile.setShortcut("Ctrl+L")
-        self.loadFile.setStatusTip('Load File')
+        self.loadFile.setStatusTip("Load File")
         self.loadFile.triggered.connect(self.load_file)
         
         
-        self.statusBar().showMessage('Message in statusbar.')  
+        self.statusBar().showMessage("Message in statusbar.")  
 
         mainMenu = self.menuBar()
         fileMenu = mainMenu.addMenu("&File")
@@ -110,13 +113,13 @@ class Window(QMainWindow):
         self.start.clicked.connect(self.loadsave)
         self.start.resize(500, 300)
         self.start.move(200, 200)
-        self.start.setStyleSheet('font-size: 100px;')
+        self.start.setStyleSheet("font-size: 100px;")
         
         self.delete = QPushButton("Delete", self)
         #self.delete.clicked.connect(self.deletesave)
         self.delete.resize(500, 300)
         self.delete.move(700, 200)
-        self.delete.setStyleSheet('font-size: 100px;')
+        self.delete.setStyleSheet("font-size: 100px;")
         
         self.btnC[0].clicked.connect(lambda: self.change("1"))
         self.btnC[0].move(130,  400)
@@ -213,18 +216,18 @@ class Window(QMainWindow):
         self.show()
         
     def loadsave(self):
-        text, ok = QInputDialog.getText(self, 'Text Input Dialog', 'Enter your name:\n(Enter a new name to create new user\nEnter previous name to load)') 
+        text, ok = QInputDialog.getText(self, "Load save", "Enter your name:\n(This name will be used to identify your save)") 
         print(text)
         print(ok)
         if ok:
             con = None
             try:
-                con = lite.connect('player.db')
+                con = lite.connect("player.db")
                 cur = con.cursor()    
                 cur.execute("SELECT * FROM player")
                 
             except:
-                cur.execute("CREATE TABLE player(Id INTEGER PRIMARY KEY, Name TEXT, Money REAL);")
+                cur.execute("CREATE TABLE player(Id INTEGER PRIMARY KEY, Name TEXT, Money REAL, tLos REAL, tWon REAL);")
 
             finally:
                 
@@ -233,7 +236,7 @@ class Window(QMainWindow):
                     
             self.name = text.lower()
 
-            con = lite.connect('player.db')
+            con = lite.connect("player.db")
 
             with con:    
                 cur = con.cursor()
@@ -244,12 +247,14 @@ class Window(QMainWindow):
                     if row[1]==self.name:
                         exists=1
                 if exists == 0:
-                    cur.execute("INSERT INTO player(Name,Money) VALUES ('%s',100);" % (self.name))
-                cur.execute("SELECT Money FROM player WHERE Name=='%s'" % self.name)
-                cur.execute("SELECT Money FROM player WHERE Name=='%s'" % self.name)
+                    cur.execute("INSERT INTO player(Name,Money,tLos,tWon) VALUES ('%s',100,0,0);" % (self.name))
+                cur.execute("SELECT Money,tLos,tWon FROM player WHERE Name=='%s'" % self.name)
                 rows = cur.fetchall()
                 for row in rows:
+                    print(row)
                     self.var_money = row[0]
+                    self.tWon = row[2]
+                    self.tLos = row[1]
                     self.money.setText("Money %s €"%(str(self.var_money)))
                     self.saveFile.setEnabled(True) 
             self.start.resize(0, 0)
@@ -264,7 +269,17 @@ class Window(QMainWindow):
                 self.btnB[i].resize(100, 50)
                 self.btnB[i].setEnabled(True)
                 self.btnB[i].setShortcut("%s" % (i+1))
-        self.start.setEnabled(False)
+            self.start.setEnabled(False)
+            picIndex = 0
+            indent=100
+            card=["back", "back", "back", "back", "back"]
+            for i in range(0, 5):
+                self.pic.append(QLabel(self))
+                self.pic[picIndex].setPixmap(QPixmap("img/%s.svg"%(card[i])))
+                self.pic[picIndex].setGeometry(indent, 150, 169, 245)
+                indent+=200
+                self.pic[picIndex].show()
+                picIndex+=1
     def play(self):
         if self.play_test == 1:
             self.restart()
@@ -286,13 +301,14 @@ class Window(QMainWindow):
         self.empty()
         self.resize()
         self.card = self.cardPic(ans, 150)
+        # why did changing fixing if not to != in the joker if statement 
         cards = ("Ace","2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Joker")
         for x in range(0, len(cards)):
             for i in range(0, 5):
                 if cards[x][0:2] in self.card[i][0:2]:
                     if self.card[i][0:2] not in ranks:
-                        if cards[x] is not "Joker":
-                            pair[i]=(fnmatch.filter(self.card, '%s*'%(cards[x])))
+                        if cards[x] != "Joker":
+                            pair[i]=(fnmatch.filter(self.card, "%s*"%(cards[x])))
                             cardValues[i]=x+1
                         ranks[i]=self.card[i][0:2]
         for i in range(0, len(ranks)):
@@ -381,6 +397,15 @@ class Window(QMainWindow):
         # Make function that does playerchoice win var_money ant tlos and twon
         # so it uses parameter to test if tlos or twon
         #
+        #
+        # Maby playerChoice didnt get set cuz 1 if sats blev triggered utan att det sen efter blev accepted
+        #
+        #
+        print(suit)
+        print(ranks)
+        print(pair)
+        print(cardValues)
+        playerChoice="THIS DIDNT WORK"
         if ((cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suits[4]==0) or \
             (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and suits[4]==1) or \
             (cardValues[2]+3==cardValues[3]+2==cardValues[4]+1==13 and suits[4]==1 and cardValues[1]==1) or \
@@ -400,7 +425,7 @@ class Window(QMainWindow):
             )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight royal flush in "+str(suit[0])
             self.var_money+=self.var_bet*976
-            self.tWon+=self.var_bet*976
+            self.tWon+=self.var_bet*976-self.var_bet
             win="And won %s €"%(round(self.var_bet*976, 2))
         elif (5 in pair) or (4 in pair and suits[4]==1) or (3 in pair and suits[4]==2):
             # MABY HERE DO same som i pari 4 for i in range whatever tar mindre rader
@@ -408,7 +433,7 @@ class Window(QMainWindow):
                if (pair[i]==5) or (pair[i]==4 and suits[4]==1) or (pair[i]==3 and suits[4]==2) :
                     playerChoice="You got five of "+str(ranks[i]+"'s")
                     self.var_money+=self.var_bet*976
-                    self.tWon+=self.var_bet*976
+                    self.tWon+=self.var_bet*976-self.var_bet
                     win="And won %s €"%(round(self.var_bet*976, 2))
                     break
         # IMPLEMENT SAME THING FROM STRAIGHT ROYAL FLUSH TO HERE
@@ -431,14 +456,14 @@ class Window(QMainWindow):
             )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight flush in "+str(suit[0])
             self.var_money+=self.var_bet*200
-            self.tWon+=self.var_bet*200
+            self.tWon+=self.var_bet*200-self.var_bet
             win="And won %s €"%(round(self.var_bet*200, 2))
         elif (4 in pair) or (3 in pair and suits[4]==1) or (2 in pair and suits[4]==2):
             for i in range(0, 4):
                 if (pair[i]==4) or (pair[i]==3 and suits[4]==1) or (pair[i]==2 and suits[4]==2) :
                     playerChoice="You got four of a kind with "+str(ranks[i]+"'s")
                     self.var_money+=self.var_bet*50
-                    self.tWon+=self.var_bet*50
+                    self.tWon+=self.var_bet*50-self.var_bet
                     win="And won %s €"%(round(self.var_bet*50, 2))
                     break
         elif (3 in pair and 2 in pair) or (pair.count(2)==2 and suits[4]==1):
@@ -471,14 +496,14 @@ class Window(QMainWindow):
                     else:
                         playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
                     self.var_money+=self.var_bet*25
-                    self.tWon+=self.var_bet*25
+                    self.tWon+=self.var_bet*25-self.var_bet
                     win="And won %s €"%(round(self.var_bet*25, 2))
                     break
                 I-=1
         elif suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a flush in "+str(suit[0])
             self.var_money+=self.var_bet*15
-            self.tWon+=self.var_bet*15
+            self.tWon+=self.var_bet*15-self.var_bet
             win="And won %s €"%(round(self.var_bet*15, 2))
         # This one should work thinking logically men you newer know
         elif (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 )or \
@@ -515,14 +540,14 @@ class Window(QMainWindow):
             (cardValues[3]+3==cardValues[4]+2==13 and cardValues[2]==1 and suits[4]==2):
             playerChoice="You got a straight"
             self.var_money+=self.var_bet*10
-            self.tWon+=self.var_bet*10
+            self.tWon+=self.var_bet*10-self.var_bet
             win="And won %s €"%(round(self.var_bet*10, 2))
         elif (3 in pair) or (2 in pair and suits[4]==1) or (1 in pair and suits[4]==2):
             for i in range(0, 5):
                  if (pair[i]==3) or (pair[i]==2 and suits[4]==1) or (pair[i]==1 and suits[4]==2) :
                     playerChoice="You got a tripple of "+str(ranks[i]+"'s")
                     self.var_money+=self.var_bet*4
-                    self.tWon+=self.var_bet*4
+                    self.tWon+=self.var_bet*4-self.var_bet
                     win="And won %s €"%(round(self.var_bet*4, 2))
                     break
                     
@@ -532,7 +557,7 @@ class Window(QMainWindow):
                 if pair[II]==2 and pair[I]==2:
                     playerChoice="You got two pairs one of "+str(ranks[II]+"'s")+str(" and one of ")+str(ranks[I]+"'s")
                     self.var_money+=self.var_bet*2
-                    self.tWon+=self.var_bet*2
+                    self.tWon+=self.var_bet*2-self.var_bet
                     win="And won %s €"%(round(self.var_bet*2, 2))
                     break
                 if I==1:
@@ -623,8 +648,7 @@ class Window(QMainWindow):
                 self.card[i]=cardDeck[self.drawn]
                 self.drawn+=1
             I+=1
-        I = 1
-#        self.card =  [ "Joker","Joker","2 of Clubs", "2 of Spades", "2 of Hearts"]
+        self.card =  [ "Joker","Jack of Hearts","King of Clubs", "10 of Spades", "6 of Hearts"]
         for i in range(0, 5):
             self.pic.append(QLabel(self))
             self.pic[self.picIndex].setPixmap(QPixmap("img/%s.svg"%(self.card[i])))
@@ -632,7 +656,6 @@ class Window(QMainWindow):
             self.indent+=200
             self.pic[self.picIndex].show()
             self.picIndex+=1
-            I+=1
         return self.card
     def restart(self):
         self.resize()
@@ -667,17 +690,17 @@ class Window(QMainWindow):
             self.changeCard.append(str(n))
             self.btnC[int(n)-1].setStyleSheet(("background-color: none;"))
     def file_save(self):
-        con = lite.connect('player.db')
+        con = lite.connect("player.db")
 
         with con:    
             cur = con.cursor()
             print(self.var_money)
             print(self.name)
-            cur.execute("UPDATE player SET Money=%s WHERE Name='%s'" % (self.var_money, self.name))
-#            cur.execute("SELECT * FROM player WHERE Name=='%s'" % self.name)
-#            rows = cur.fetchall()
-#            for row in rows:
-#                print(row)
+            cur.execute("UPDATE player SET Money=%s, tLos=%s, tWon=%s WHERE Name='%s'" % (self.var_money, self.tLos, self.tWon ,  self.name))
+            cur.execute("SELECT * FROM player WHERE Name=='%s'" % self.name)
+            rows = cur.fetchall()
+            for row in rows:
+                print(row)
         
 #        options = QFileDialog.Options()
 #        options |= QFileDialog.DontUseNativeDialog
@@ -692,7 +715,7 @@ class Window(QMainWindow):
 #        except FileNotFoundError:
 #            pass
     def load_file(self):
-        con = lite.connect('player.db')
+        con = lite.connect("player.db")
 
         with con:    
             cur = con.cursor()
@@ -727,7 +750,7 @@ class Window(QMainWindow):
         print(event)
         # HERE YOU MAKE YES SAVE AND EXIT NO EXIT OCH CANCEL STAY IN GAME OCH IN MESSAGE BOX U PUT ALL STATISTIC HOW LONG YOU HAVE PLAYED ETC
         msgBox = QMessageBox()
-        msgBox.setText('What to do?')
+        msgBox.setText("What to do?")
         cancel_button = msgBox.addButton("Cancel", QMessageBox.YesRole)
         no_button = msgBox.addButton("Exit without saving", QMessageBox.YesRole)        
         yes_button = msgBox.addButton("Save and Exit", QMessageBox.YesRole)        
@@ -752,7 +775,7 @@ for a in range(0, ans):
 cardDeck.append("Joker")
 cardDeck.append("Joker")
 shuffle(cardDeck)
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = QApplication(sys.argv)
     Window()
     sys.exit(app.exec_())
