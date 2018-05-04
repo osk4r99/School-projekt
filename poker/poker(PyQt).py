@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#PyQt5-Poker version 1.5
+#PyQt5-Poker version 1.4
 
 #Connect till database username password money
 #SQLITE CONNECT efter man enter uname password and click button (maby only uname)
@@ -41,7 +41,7 @@
 import sys
 import fnmatch
 import sqlite3 as lite
-from random import shuffle
+from random import shuffle, choice
 from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QAction, QMainWindow, QStyleFactory, QInputDialog, QMessageBox
 from PyQt5.QtGui import QIcon, QPixmap, QFont
 
@@ -101,7 +101,9 @@ class Window(QMainWindow):
         self.btnC=[]
         self.btnB=[]
         self.btn = QPushButton("Deal", self)
-        self.btnDouble = QPushButton("Doubble", self)
+        self.btnDouble = QPushButton("Double", self)
+        self.btnRed = QPushButton("Red", self)
+        self.btnBlack = QPushButton("Black", self)
         self.btnB.append(QPushButton("Bet 0,20 €", self))
         self.btnB.append(QPushButton("Bet 0,50 €", self))
         self.btnB.append(QPushButton("Bet 1 €", self))
@@ -164,10 +166,12 @@ class Window(QMainWindow):
         self.tLos = 0
         self.card = [0,0,0,0,0]
         self.pic = []
+        self.pic2 = QLabel(self)
         self.changeCard=["1", "2", "3", "4", "5"]
         self.drawn = 0
         self.picIndex = 0
         self.indent=100
+        self.toWin=0
         self.btnB[0].setEnabled(False)
 
         self.btnB[2].clicked.connect(lambda: self.bet(1, 2))
@@ -190,10 +194,21 @@ class Window(QMainWindow):
         self.btn.move(100,  100)
         self.btn.setEnabled(False)
         
-#        self.btnDouble.clicked.connect(self.play)
+        self.btnDouble.clicked.connect(self.double)
         self.btnDouble.resize(0, 0)
         self.btnDouble.move(0,  100)
         self.btnDouble.setEnabled(False)
+        self.btnDouble.setShortcut("D")
+        
+        self.btnRed.clicked.connect(lambda: self.blackRed("R"))
+        self.btnRed.resize(0, 0)
+        self.btnRed.move(667,  700)
+        self.btnRed.setEnabled(False)
+        
+        self.btnBlack.clicked.connect(lambda: self.blackRed("B"))
+        self.btnBlack.resize(0, 0)
+        self.btnBlack.move(400,  700)
+        self.btnBlack.setEnabled(False)
         
         self.money = QLabel(("Money %s €"%(str(self.var_money))), self)
         self.money.setStyleSheet(("background-color: white;"))
@@ -224,6 +239,27 @@ class Window(QMainWindow):
         self.play_test=1
     
         self.show()
+    def double(self):
+        self.btnBlack.resize(100, 50)
+        self.btnRed.resize(100, 50)
+        self.btnBlack.setEnabled(True)
+        self.btnRed.setEnabled(True)
+        self.btn.setEnabled(False)
+        card="back"
+        self.pic2.setPixmap(QPixmap("img/%s.svg"%(card)))
+        self.pic2.setGeometry(500, 500, 169, 245)
+        self.pic2.show()
+    def blackRed(self, blackOrRed):
+        self.btn.setEnabled(True)
+        card=choice(("Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10","Jack", "Queen", "King" ))
+        suit=choice(("Hearts", "Spades", "Diamonds", "Clubs"))
+        random="%s of %s" % (card, suit)
+        self.pic2.setPixmap(QPixmap("img/%s.svg"%(random)))
+        self.pic2.setGeometry(500, 500, 169, 245)
+        self.pic2.show()
+        print(random)
+        # HERE YOU EITHER GET MORE MONEY OR LOOSE EVERYTHING
+        #Gör att man ser sitt card om man van eller ej sen turn det back till back card
     def deletesave(self):
         text, ok = QInputDialog.getText(self, "Delete save", "Enter your name:\n(The name of your save)") 
         print(text)
@@ -481,17 +517,19 @@ class Window(QMainWindow):
             (cardValues[3]+1==cardValues[4]==13 and suits[4]==2 and cardValues[2]==1)  \
             )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight royal flush in "+str(suit[0])
-            self.var_money+=self.var_bet*800
-            self.tWon+=self.var_bet*800-self.var_bet
+            self.toWin=self.var_bet*800
+            self.tWon+=self.var_bet*800
             win="And won %s €"%(round(self.var_bet*800, 2))
+            self.btnDouble.setEnabled(True)
         elif (5 in pair) or (4 in pair and suits[4]==1) or (3 in pair and suits[4]==2):
             # MABY HERE DO same som i pari 4 for i in range whatever tar mindre rader
             for i in range(0, 4):
                if (pair[i]==5) or (pair[i]==4 and suits[4]==1) or (pair[i]==3 and suits[4]==2) :
                     playerChoice="You got five of "+str(ranks[i]+"'s")
-                    self.var_money+=self.var_bet*800
-                    self.tWon+=self.var_bet*800-self.var_bet
+                    self.toWin=self.var_bet*800
+                    self.tWon+=self.var_bet*800
                     win="And won %s €"%(round(self.var_bet*800, 2))
+                    self.btnDouble.setEnabled(True)
                     break
         # IMPLEMENT SAME THING FROM STRAIGHT ROYAL FLUSH TO HERE
         elif ((cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and suits[4]==0) or \
@@ -512,16 +550,18 @@ class Window(QMainWindow):
             (cardValues[4]==cardValues[3]+1==cardValues[2]+2 and suits[4]==2)  \
             )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight flush in "+str(suit[0])
-            self.var_money+=self.var_bet*50
-            self.tWon+=self.var_bet*50-self.var_bet
+            self.toWin=self.var_bet*50
+            self.tWon+=self.var_bet*50
             win="And won %s €"%(round(self.var_bet*50, 2))
+            self.btnDouble.setEnabled(True)
         elif (4 in pair) or (3 in pair and suits[4]==1) or (2 in pair and suits[4]==2):
             for i in range(0, 4):
                 if (pair[i]==4) or (pair[i]==3 and suits[4]==1) or (pair[i]==2 and suits[4]==2) :
                     playerChoice="You got four of a kind with "+str(ranks[i]+"'s")
-                    self.var_money+=self.var_bet*10
-                    self.tWon+=self.var_bet*10-self.var_bet
+                    self.toWin=self.var_bet*10
+                    self.tWon+=self.var_bet*10
                     win="And won %s €"%(round(self.var_bet*10, 2))
+                    self.btnDouble.setEnabled(True)
                     break
         elif (3 in pair and 2 in pair) or (pair.count(2)==2 and suits[4]==1):
             I=1
@@ -552,16 +592,18 @@ class Window(QMainWindow):
                         playerChoice="You got a full house with three "+str(bigger)+"'s and two "+str(smaller)+"'s"  
                     else:
                         playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
-                    self.var_money+=self.var_bet*7
-                    self.tWon+=self.var_bet*7-self.var_bet
+                    self.toWin=self.var_bet*7
+                    self.tWon+=self.var_bet*7
                     win="And won %s €"%(round(self.var_bet*7, 2))
+                    self.btnDouble.setEnabled(True)
                     break
                 I-=1
         elif suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a flush in "+str(suit[0])
-            self.var_money+=self.var_bet*5
-            self.tWon+=self.var_bet*5-self.var_bet
+            self.toWin=self.var_bet*5
+            self.tWon+=self.var_bet*5
             win="And won %s €"%(round(self.var_bet*5, 2))
+            self.btnDouble.setEnabled(True)
         # Testa typ every combo du kan think of alla combon med ace to 10 alla med ace to 5 sen alla i mitten
         elif (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 )or \
             (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1) or \
@@ -596,16 +638,18 @@ class Window(QMainWindow):
             (cardValues[4]+2==cardValues[3]+3==cardValues[2]+4 and suits[4]==2)or \
             (cardValues[3]+3==cardValues[4]+2==13 and cardValues[2]==1 and suits[4]==2):
             playerChoice="You got a straight"
-            self.var_money+=self.var_bet*4
-            self.tWon+=self.var_bet*4-self.var_bet
+            self.toWin=self.var_bet*4
+            self.tWon+=self.var_bet*4
             win="And won %s €"%(round(self.var_bet*4, 2))
+            self.btnDouble.setEnabled(True)
         elif (3 in pair) or (2 in pair and suits[4]==1) or (1 in pair and suits[4]==2):
             for i in range(0, 5):
                  if (pair[i]==3) or (pair[i]==2 and suits[4]==1) or (pair[i]==1 and suits[4]==2) :
                     playerChoice="You got a tripple of "+str(ranks[i]+"'s")
-                    self.var_money+=self.var_bet*2
-                    self.tWon+=self.var_bet*2-self.var_bet
+                    self.toWin=self.var_bet*2
+                    self.tWon+=self.var_bet*2
                     win="And won %s €"%(round(self.var_bet*2, 2))
+                    self.btnDouble.setEnabled(True)
                     break
                     
         elif pair.count(2)==2:
@@ -613,9 +657,10 @@ class Window(QMainWindow):
             for i in range(0, 3):
                 if pair[II]==2 and pair[I]==2:
                     playerChoice="You got two pairs one of "+str(ranks[II]+"'s")+str(" and one of ")+str(ranks[I]+"'s")
-                    self.var_money+=self.var_bet
-                    self.tWon+=self.var_bet-self.var_bet
+                    self.toWin=self.var_bet
+                    self.tWon+=self.var_bet
                     win="And won %s €"%(round(self.var_bet, 2))
+                    self.btnDouble.setEnabled(True)
                     break
                 if I==1:
                     I+=1
@@ -630,7 +675,6 @@ class Window(QMainWindow):
 #                        win="And lost nothing"
 #                    else:
 #uncomment this and indent money- bet and win= for no loss with jacks or beter
-                    self.tLos+=self.var_bet
                     win="And lost %s €"%(round(self.var_bet, 2))
                     break
 #        elif "Ace" in ranks:
@@ -661,7 +705,6 @@ class Window(QMainWindow):
                 playerChoice=str("You got a Jack high")
             else:
                 playerChoice=str("You got a ")+str(max(cardValues))+str(" high")
-            self.tLos+=self.var_bet
             win="And lost %s €"%(round(self.var_bet, 2))
         self.player.setText(playerChoice)
         self.player.setStyleSheet(("background-color: white;"))
@@ -669,10 +712,11 @@ class Window(QMainWindow):
         self.dealer.setStyleSheet(("background-color: white;"))
         print(playerChoice)
         self.var_money=round(self.var_money, 2)
-        self.money.setText("Money %s €"%(str(self.var_money)))
+        self.money.setText("Money %s €"%(str(self.var_money+self.toWin)))
         for i in range(0, len(self.btnB)):
             self.btnB[i].setEnabled(True) 
     def empty(self):
+        self.pic2.resize(0, 0)
         for i in range(0, len(self.pic)):
             self.pic[i].resize(0, 0)
         self.indent, self.picIndex, self.pic=100, 0, []
@@ -694,6 +738,7 @@ class Window(QMainWindow):
         if self.var_bet>self.var_money:
             self.var_bet=self.var_money
         self.var_money -= self.var_bet
+        self.tLos += self.var_bet
         self.var_money=round(self.var_money, 2)
         self.money.setText("Money %s €"%(str(self.var_money)))
         self.card = self.cardPic("12345", 150)
@@ -716,6 +761,9 @@ class Window(QMainWindow):
             self.picIndex+=1
         return self.card
     def restart(self):
+        self.var_money+=self.toWin
+        self.toWin=0
+        self.btnDouble.setEnabled(False)
         self.resize()
         self.win.setText("")
         self.dealer.setText("")
