@@ -12,7 +12,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#PyQt5-Poker version 1.4
+#PyQt5-Poker version 1.5
 
 #Connect till database username password money
 #SQLITE CONNECT efter man enter uname password and click button (maby only uname)
@@ -32,6 +32,10 @@
 # det total from time elapsed and current session time and print it out stating this is your total time
 # 
 #State the license for the card backs side in the start of the file somewhere ask tore
+#
+#
+#räkna tLos and tWon i en statement if money-moneybefor > 0: is won else is los och då addas difference till tlos annors twon
+#
 #
 #
 import sys
@@ -97,6 +101,7 @@ class Window(QMainWindow):
         self.btnC=[]
         self.btnB=[]
         self.btn = QPushButton("Deal", self)
+        self.btnDouble = QPushButton("Doubble", self)
         self.btnB.append(QPushButton("Bet 0,20 €", self))
         self.btnB.append(QPushButton("Bet 0,50 €", self))
         self.btnB.append(QPushButton("Bet 1 €", self))
@@ -116,7 +121,7 @@ class Window(QMainWindow):
         self.start.setStyleSheet("font-size: 100px;")
         
         self.delete = QPushButton("Delete", self)
-        #self.delete.clicked.connect(self.deletesave)
+        self.delete.clicked.connect(self.deletesave)
         self.delete.resize(500, 300)
         self.delete.move(700, 200)
         self.delete.setStyleSheet("font-size: 100px;")
@@ -185,6 +190,11 @@ class Window(QMainWindow):
         self.btn.move(100,  100)
         self.btn.setEnabled(False)
         
+#        self.btnDouble.clicked.connect(self.play)
+        self.btnDouble.resize(0, 0)
+        self.btnDouble.move(0,  100)
+        self.btnDouble.setEnabled(False)
+        
         self.money = QLabel(("Money %s €"%(str(self.var_money))), self)
         self.money.setStyleSheet(("background-color: white;"))
 
@@ -214,7 +224,44 @@ class Window(QMainWindow):
         self.play_test=1
     
         self.show()
-        
+    def deletesave(self):
+        text, ok = QInputDialog.getText(self, "Delete save", "Enter your name:\n(The name of your save)") 
+        print(text)
+        print(ok)
+        if ok:
+            con = None
+            try:
+                con = lite.connect("player.db")
+                cur = con.cursor()    
+                cur.execute("SELECT * FROM player")
+                
+            except:
+                cur.execute("CREATE TABLE player(Id INTEGER PRIMARY KEY, Name TEXT, Money REAL, tLos REAL, tWon REAL);")
+
+            finally:
+                
+                if con:
+                    con.close()
+                    
+            self.name = text.lower()
+
+            con = lite.connect("player.db")
+
+            with con:    
+                cur = con.cursor()
+                cur.execute("SELECT * FROM player")
+                rows = cur.fetchall()
+                exists = 0
+                for row in rows:
+                    if row[1]==self.name:
+                        exists=1
+                        cur.execute("DELETE FROM player WHERE Name=='%s'" % self.name)
+                if exists == 0:
+                    msg = QMessageBox()
+                    msg.setIcon(QMessageBox.Critical)
+                    msg.setText("Name not found")
+                    msg.setWindowTitle("Error")
+                    msg.exec_()
     def loadsave(self):
         text, ok = QInputDialog.getText(self, "Load save", "Enter your name:\n(This name will be used to identify your save)") 
         print(text)
@@ -260,6 +307,7 @@ class Window(QMainWindow):
             self.start.resize(0, 0)
             self.delete.resize(0, 0)
             self.btn.resize(100, 50)
+            self.btnDouble.resize(100, 50)
             self.btn.setEnabled(True)
             self.btn.setShortcut("space")
             for i in range(0, len(self.btnC)):
@@ -314,6 +362,7 @@ class Window(QMainWindow):
         for i in range(0, len(ranks)):
             if pair[i]!=0:
                 pair[i]=len(pair[i])
+        # Maby that cardValues pop is uneccesary 
         for x in range(0, 5):
             for i in range(0, len(pair)):
                 if len(pair)<=i:
@@ -323,9 +372,9 @@ class Window(QMainWindow):
                     ranks.pop(i)
                     cardValues.pop(i)
         while len(pair)!=5:
-            pair.append(False)
-            ranks.append(False)
-            cardValues.append(False)
+            pair.append(None)
+            ranks.append(None)
+            cardValues.append(-10000)
 
         for i in range(0, 5):
             if "Spades" in self.card[i]:
@@ -343,7 +392,7 @@ class Window(QMainWindow):
 #            pass
         #Use this for printing how many pairs you have of each card
     #    for i in range(0, 5):
-    #        if pair[i]!=False:
+    #        if pair[i]!=None:
     #            print("You got",pair[i],"of",ranks[i])
         for i in range(0, len(ranks)):
             if "Ac" in str(ranks[i]):
@@ -401,10 +450,18 @@ class Window(QMainWindow):
         # Maby playerChoice didnt get set cuz 1 if sats blev triggered utan att det sen efter blev accepted
         #
         #
+        print("Suit:")
         print(suit)
+        print("ranks:")
         print(ranks)
+        print("pair:")
         print(pair)
+        print("cardValues:")
         print(cardValues)
+        print("Cards:")
+        print(self.card)
+        print("Suits:")
+        print(suits)
         playerChoice="THIS DIDNT WORK"
         if ((cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1 and suits[4]==0) or \
             (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and suits[4]==1) or \
@@ -424,17 +481,17 @@ class Window(QMainWindow):
             (cardValues[3]+1==cardValues[4]==13 and suits[4]==2 and cardValues[2]==1)  \
             )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight royal flush in "+str(suit[0])
-            self.var_money+=self.var_bet*976
-            self.tWon+=self.var_bet*976-self.var_bet
-            win="And won %s €"%(round(self.var_bet*976, 2))
+            self.var_money+=self.var_bet*800
+            self.tWon+=self.var_bet*800-self.var_bet
+            win="And won %s €"%(round(self.var_bet*800, 2))
         elif (5 in pair) or (4 in pair and suits[4]==1) or (3 in pair and suits[4]==2):
             # MABY HERE DO same som i pari 4 for i in range whatever tar mindre rader
             for i in range(0, 4):
                if (pair[i]==5) or (pair[i]==4 and suits[4]==1) or (pair[i]==3 and suits[4]==2) :
                     playerChoice="You got five of "+str(ranks[i]+"'s")
-                    self.var_money+=self.var_bet*976
-                    self.tWon+=self.var_bet*976-self.var_bet
-                    win="And won %s €"%(round(self.var_bet*976, 2))
+                    self.var_money+=self.var_bet*800
+                    self.tWon+=self.var_bet*800-self.var_bet
+                    win="And won %s €"%(round(self.var_bet*800, 2))
                     break
         # IMPLEMENT SAME THING FROM STRAIGHT ROYAL FLUSH TO HERE
         elif ((cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 and suits[4]==0) or \
@@ -455,16 +512,16 @@ class Window(QMainWindow):
             (cardValues[4]==cardValues[3]+1==cardValues[2]+2 and suits[4]==2)  \
             )and suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a straight flush in "+str(suit[0])
-            self.var_money+=self.var_bet*200
-            self.tWon+=self.var_bet*200-self.var_bet
-            win="And won %s €"%(round(self.var_bet*200, 2))
+            self.var_money+=self.var_bet*50
+            self.tWon+=self.var_bet*50-self.var_bet
+            win="And won %s €"%(round(self.var_bet*50, 2))
         elif (4 in pair) or (3 in pair and suits[4]==1) or (2 in pair and suits[4]==2):
             for i in range(0, 4):
                 if (pair[i]==4) or (pair[i]==3 and suits[4]==1) or (pair[i]==2 and suits[4]==2) :
                     playerChoice="You got four of a kind with "+str(ranks[i]+"'s")
-                    self.var_money+=self.var_bet*50
-                    self.tWon+=self.var_bet*50-self.var_bet
-                    win="And won %s €"%(round(self.var_bet*50, 2))
+                    self.var_money+=self.var_bet*10
+                    self.tWon+=self.var_bet*10-self.var_bet
+                    win="And won %s €"%(round(self.var_bet*10, 2))
                     break
         elif (3 in pair and 2 in pair) or (pair.count(2)==2 and suits[4]==1):
             I=1
@@ -474,7 +531,7 @@ class Window(QMainWindow):
                         bigger = max(cardValues)
                         smaller = 14
                         for i in range(0, 5):
-                            if cardValues[i]!=False and cardValues[i]<=smaller:
+                            if cardValues[i]!=None and cardValues[i]<=smaller:
                                 smaller = cardValues[i]
                         if smaller==1:
                             bigger, smaller = smaller, bigger
@@ -495,17 +552,17 @@ class Window(QMainWindow):
                         playerChoice="You got a full house with three "+str(bigger)+"'s and two "+str(smaller)+"'s"  
                     else:
                         playerChoice="You got a full house with three "+str(ranks[i]+"'s and two ")+str(ranks[I]+"'s")  
-                    self.var_money+=self.var_bet*25
-                    self.tWon+=self.var_bet*25-self.var_bet
-                    win="And won %s €"%(round(self.var_bet*25, 2))
+                    self.var_money+=self.var_bet*7
+                    self.tWon+=self.var_bet*7-self.var_bet
+                    win="And won %s €"%(round(self.var_bet*7, 2))
                     break
                 I-=1
         elif suit[0]==suit[1]==suit[2]==suit[3]==suit[4]:
             playerChoice="You got a flush in "+str(suit[0])
-            self.var_money+=self.var_bet*15
-            self.tWon+=self.var_bet*15-self.var_bet
-            win="And won %s €"%(round(self.var_bet*15, 2))
-        # This one should work thinking logically men you newer know
+            self.var_money+=self.var_bet*5
+            self.tWon+=self.var_bet*5-self.var_bet
+            win="And won %s €"%(round(self.var_bet*5, 2))
+        # Testa typ every combo du kan think of alla combon med ace to 10 alla med ace to 5 sen alla i mitten
         elif (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3==cardValues[0]+4 )or \
             (cardValues[1]+3==cardValues[2]+2==cardValues[3]+1==cardValues[4]==13 and cardValues[0]==1) or \
             (cardValues[4]==cardValues[3]+1==cardValues[2]+2==cardValues[1]+3 and suits[4]==1)or \
@@ -539,16 +596,16 @@ class Window(QMainWindow):
             (cardValues[4]+2==cardValues[3]+3==cardValues[2]+4 and suits[4]==2)or \
             (cardValues[3]+3==cardValues[4]+2==13 and cardValues[2]==1 and suits[4]==2):
             playerChoice="You got a straight"
-            self.var_money+=self.var_bet*10
-            self.tWon+=self.var_bet*10-self.var_bet
-            win="And won %s €"%(round(self.var_bet*10, 2))
+            self.var_money+=self.var_bet*4
+            self.tWon+=self.var_bet*4-self.var_bet
+            win="And won %s €"%(round(self.var_bet*4, 2))
         elif (3 in pair) or (2 in pair and suits[4]==1) or (1 in pair and suits[4]==2):
             for i in range(0, 5):
                  if (pair[i]==3) or (pair[i]==2 and suits[4]==1) or (pair[i]==1 and suits[4]==2) :
                     playerChoice="You got a tripple of "+str(ranks[i]+"'s")
-                    self.var_money+=self.var_bet*4
-                    self.tWon+=self.var_bet*4-self.var_bet
-                    win="And won %s €"%(round(self.var_bet*4, 2))
+                    self.var_money+=self.var_bet*2
+                    self.tWon+=self.var_bet*2-self.var_bet
+                    win="And won %s €"%(round(self.var_bet*2, 2))
                     break
                     
         elif pair.count(2)==2:
@@ -556,9 +613,9 @@ class Window(QMainWindow):
             for i in range(0, 3):
                 if pair[II]==2 and pair[I]==2:
                     playerChoice="You got two pairs one of "+str(ranks[II]+"'s")+str(" and one of ")+str(ranks[I]+"'s")
-                    self.var_money+=self.var_bet*2
-                    self.tWon+=self.var_bet*2-self.var_bet
-                    win="And won %s €"%(round(self.var_bet*2, 2))
+                    self.var_money+=self.var_bet
+                    self.tWon+=self.var_bet-self.var_bet
+                    win="And won %s €"%(round(self.var_bet, 2))
                     break
                 if I==1:
                     I+=1
@@ -648,7 +705,8 @@ class Window(QMainWindow):
                 self.card[i]=cardDeck[self.drawn]
                 self.drawn+=1
             I+=1
-        self.card =  [ "Joker","Jack of Hearts","King of Clubs", "10 of Spades", "6 of Hearts"]
+#        self.card =  [ "3 of Spades","2 of Hearts","Joker", "3 of Clubs", "4 of Diamonds"]
+#        self.card =  [ "3 of Spades","2 of Hearts","Joker", "4 of Clubs", "5 of Diamonds"]
         for i in range(0, 5):
             self.pic.append(QLabel(self))
             self.pic[self.picIndex].setPixmap(QPixmap("img/%s.svg"%(self.card[i])))
