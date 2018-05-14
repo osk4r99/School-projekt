@@ -12,31 +12,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#PyQt5-Poker version 1.4
+#PyQt5-Poker version 1.5
 
-#Connect till database username password money
-#SQLITE CONNECT efter man enter uname password and click button (maby only uname)
-# sen också create user password
-# sen save sku UPDATE rowen
 # story in game pay bank debt 1 k easy 5 k med 10 k hard in 3 H maby more if needed
-# Add possibility to delete a load save
 # https://stackoverflow.com/questions/9764298/is-it-possible-to-sort-two-listswhich-reference-each-other-in-the-exact-same-w
-
-# NOW JOKER WORKS DEN KAN INTE ENNU PIC RIGHT CARD NAME
-#
-# MAKE VINSTERNA ALLA LITE SÄMMRE OCH ADD TUPPLAUS MED EN VETTIG GRÄNS FÖR HUR MYCKET MAN MAX KAN FÅ
 
 # Nu borde det fungera med jocker perfectly enda ner till triss där den ibland kan välja fel kort som par om du har 2 jokers same for par med 1 joker
 
 # make save att det save also twon tlos set time elapsed in a variable och sen när man exit game tar 
 # det total from time elapsed and current session time and print it out stating this is your total time
 # 
-#State the license for the card backs side in the start of the file somewhere ask tore
-#
-#
-#räkna tLos and tWon i en statement if money-moneybefor > 0: is won else is los och då addas difference till tlos annors twon
-#
-#
+#tuplaus fuckar up twon och tlos
 #
 import sys
 import fnmatch
