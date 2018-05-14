@@ -257,6 +257,22 @@ class Window(QMainWindow):
         self.pic2.setPixmap(QPixmap("img/%s.svg"%(random)))
         self.pic2.setGeometry(500, 500, 169, 245)
         self.pic2.show()
+        if (suit=="Hearts" or suit=="Diamonds") and blackOrRed=="R":
+            print(self.toWin)
+            self.toWin += self.toWin
+            print(self.toWin)
+            self.money.setText("Money %s €"%(str(self.var_money+self.toWin)))
+        elif (suit=="Spades" or suit=="Clubs") and blackOrRed=="B":
+            print(self.toWin)
+            self.toWin += self.toWin
+            print(self.toWin)
+            self.money.setText("Money %s €"%(str(self.var_money+self.toWin)))
+        else:
+            print("Wrong")
+            self.toWin = 0
+            self.btnBlack.setEnabled(False)
+            self.btnRed.setEnabled(False)
+            self.money.setText("Money %s €"%(str(self.var_money+self.toWin)))
         print(random)
         # HERE YOU EITHER GET MORE MONEY OR LOOSE EVERYTHING
         #Gör att man ser sitt card om man van eller ej sen turn det back till back card
@@ -781,6 +797,11 @@ class Window(QMainWindow):
         self.btnC[3].setStyleSheet(("background-color: none;"))
         self.btnC[4].setStyleSheet(("background-color: none;"))
         self.drawn=0
+        self.btnBlack.setEnabled(False)
+        self.btnRed.setEnabled(False)
+        self.btnBlack.resize(0, 0)
+        self.btnRed.resize(0, 0)
+        self.money.setText("Money %s €"%(str(self.var_money)))
         self.deal()
     def style_set(self, n):
         QApplication.setStyle(QStyleFactory.create(n))
