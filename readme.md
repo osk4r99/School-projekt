@@ -7,6 +7,7 @@ A casino game in python
 - Yatzy
 - Roll the dice
 - Roulett
+- Backgammon
 - 2 player mode
 - comedy
 - lucky 7
